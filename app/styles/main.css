@@ -1,0 +1,216 @@
+body {
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+#popup {
+    width: 800px;
+}
+
+.bloque {
+    /*margin: 0 auto;
+    float: none !important;*/
+    margin-top: 50px;
+}
+
+.bloque p {
+    margin: 0 0 30px 0;
+}
+
+.bloques {
+    /*min-height: 450px;*/
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+
+.nomargin {
+    margin: 0;
+}
+
+.nomargin.mright {
+    margin-right: 20px;
+}
+
+.vertical {
+    vertical-align: middle !important;
+}
+
+.padTop15 {
+    padding-top: 15px !important;
+}
+
+.padleft15 {
+    padding-left: 15px;
+}
+
+.prigth10 {
+    padding-right: 10px;
+}
+
+.mright10 {
+    margin-right: 10px;
+}
+
+.mtop10 {
+    margin-top: 10px;
+}
+
+.navbar-brand i {
+    font-size: 1.5em;
+    vertical-align: middle;
+}
+
+#content {
+}
+
+nav.navbar {
+    margin-bottom: 0;
+}
+
+#marcajes-data table {
+    margin-top: 10px;
+}
+
+#marcajes-data table thead th {
+    text-align: center;
+    font-size: 1.2em;
+}
+
+#marcajes-data table tbody th {
+    font-size: 1em;
+    vertical-align: middle;
+    width: 10%;
+    /*padding-right: 0 !important;
+    padding-left: 0 !important;*/
+}
+
+#marcajes-data table .row-descontar td, #marcajes-data table .row-retribuido td {
+    vertical-align: bottom;
+}
+
+#marcajes-data table tbody th p {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#marcajes-data table tbody th p.mini {
+    font-weight: normal;
+    font-size: 0.8em;
+}
+
+#marcajes-data table tbody p.marcaje {
+    margin: 0;
+}
+
+#marcajes-data table td, #marcajes-data table th {
+    border-left: 2px solid #DDDDDD;
+}
+
+#marcajes-data table td:first-child, #marcajes-data table th:first-child {
+    border-left: 0;
+}
+
+#marcajes-data table thead th {
+    border-top: 0 !important;
+}
+
+#marcajes-data table th.botonera {
+    padding: 0;
+    vertical-align: middle;
+}
+
+tr.top4 th, tr.top4 td {
+    border-top: 4px solid #DDDDDD !important;
+}
+
+#marcajes-data table tr.row-hecho td, #marcajes-data table tr.row-restante td {
+    text-align: center;
+    font-size: 1.2em;
+}
+
+#marcajes-data tr.config th {
+    vertical-align: middle;
+}
+
+th.mini {
+    text-align: left !important;
+    font-weight: normal;
+    font-size: 0.7em !important;
+}
+
+.marcaje {
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.marcaje img {
+    width: 20px;
+    vertical-align: sub;
+    opacity: 0.4;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.marcaje img.mini {
+    width: 15px;
+    vertical-align: baseline;
+}
+
+.marcaje i {
+    margin-right: 10px;
+    margin-left: 10px;
+    font-size: 0.8em;
+}
+
+.mycheckbox {
+    margin-top: 0 !important;
+}
+
+#refreshButton {
+    padding: 2px 5px;
+    margin: 2px;
+}
+
+#refreshButton i {
+    font-size: 1.2em;
+}
+
+.selector {
+    border: 0;
+    background-image: linear-gradient(#009587, #009587), linear-gradient(#D2D2D2, #D2D2D2);
+    background-size: 0 2px, 100% 1px;
+    background-repeat: no-repeat;
+    background-position: center bottom, center calc(100% - 1px);
+    background-color: transparent;
+    height: 23px;
+    box-shadow: none;
+    border-bottom: 1px solid #757575;
+    border-radius: 0;
+}
+
+.hint {
+    padding-left: 45px;
+}
+
+#kAutoUpdateTime {
+    width: auto;
+}
+
+.verde {
+    color: #3C763D;
+}
+
+.lastUpdateTime {
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+#configuration h3 {
+    margin-top: 0;
+    padding: 10px 0 0 5px;
+}
+
+#configTableButton i {
+    font-size: 1.3em;
+    vertical-align: text-bottom;
+}
