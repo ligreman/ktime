@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- build:css styles/vendor.css -->
+    <link href="styles/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/ripples.min.css" rel="stylesheet">
+    <link href="styles/material-wfont.min.css" rel="stylesheet">
+    <!-- endbuild -->
+    <!-- build:css styles/main.css -->
+    <link href="styles/main.css" rel="stylesheet">
+    <!-- endbuild -->
+</head>
+<body id="popup">
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+                <span class="navbar-brand" href="#">
+                    <i class="mdi-action-query-builder"></i> kTime
+                </span>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active" id="goToMarcajes" data-div="kMarcajes"><a href="#">Marcajes</a></li>
+                <li id="goToKiosko" data-div="kKiosko"><a href="#">Kiosko</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li id="goToConfig" data-div="kConfig"><a id="configButton2" href="#">
+                    Configuración
+                </a></li>
+            </ul>
+
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div id="kMarcajes">
+    <div id="progress" class="progress">
+        <div class="progress-bar progress-bar-success" style="width: 0%"></div>
+    </div>
+
+    <!--<a href="#" id="prueba">Prueba</a>-->
+
+    <div class="alert alert-danger" id="configStatus">
+        Necesitas configurar la aplicación
+    </div>
+    <div class="alert alert-danger" id="loginFailed">
+        Ha fallado el login, por favor configurar el sistema
+    </div>
+    <div class="alert alert-danger" id="cartel-data-outdated">
+        Datos desactualizados. <a href="#" id="refreshButton2"><i class="mdi-av-loop"></i> Refrescar ahora</a>
+    </div>
+
+    <div id="marcajes-data" class="mtop10">
+        <div class="alert alert-material-blue-grey-50 col-sm-5 nomargin">
+            <strong>Hora estimada de salida:</strong> <span id="horaSalida">19:35</span>
+        </div>
+        <p class="text-right col-sm-7">
+            <button id="configSaveButton" class="btn btn-success btn-xs btn-flat nomargin mright"><i class="mdi-navigation-check"></i> Guardar cambios
+            </button>
+            <button id="configTableButton" class="btn btn-info btn-xs btn-raised nomargin mright10"><i class="mdi-device-access-time"></i> Tiempos deseados
+            </button>
+        </p>
+
+        <table class="table">
+            <thead>
+            <tr class="config info">
+                <th class="mini">Indica el tiempo que quieres realizar cada día. Semana:
+                    <span id="horas-semana">0</span>h
+                </th>
+                <th class="form-group has-info">
+                    <input data-day="lunes" type="time"
+                           class="form-control text-center floating-label iVD"
+                           placeholder="horas:minutos">
+                </th>
+                <th class="form-group has-info">
+                    <input data-day="martes" type="time"
+                           class="form-control text-center floating-label iVD"
+                           placeholder="horas:minutos">
+                </th>
+                <th class="form-group has-info">
+                    <input data-day="miercoles" type="time"
+                           class="form-control text-center floating-label iVD"
+                           placeholder="horas:minutos">
+                </th>
+                <th class="form-group has-info">
+                    <input data-day="jueves" type="time"
+                           class="form-control text-center floating-label iVD"
+                           placeholder="horas:minutos">
+                </th>
+                <th class="form-group has-info">
+                    <input data-day="viernes" type="time"
+                           class="form-control text-center floating-label iVD"
+                           placeholder="horas:minutos">
+                </th>
+            </tr>
+            <tr class="dates"></tr>
+            </thead>
+
+            <tfoot>
+            <tr class="row-restante active">
+                <!--<th>Restante</th>-->
+                <!--<td data-day="lunes"></td>-->
+                <!--<td data-day="martes"></td>-->
+                <!--<td data-day="miercoles"></td>-->
+                <!--<td data-day="jueves"></td>-->
+                <!--<td data-day="viernes"></td>-->
+            </tr>
+            </tfoot>
+
+            <tbody>
+            <tr class="row-marcas"></tr>
+
+            <tr class="row-descontar danger top4">
+                <th class="vertical">
+                    <p data-toggle="tooltip" data-placement="right" title="Inglés, comida...">Descontado</p>
+                </th>
+                <td class="form-group has-warning">
+                    <input data-day="lunes" type="number"
+                           class="form-control text-center floating-label iTD"
+                           placeholder="minutos">
+                </td>
+                <td class="form-group has-warning">
+                    <input data-day="martes" type="number"
+                           class="form-control text-center floating-label iTD"
+                           placeholder="minutos">
+                </td>
+                <td class="form-group has-warning">
+                    <input data-day="miercoles" type="number"
+                           class="form-control text-center floating-label iTD"
+                           placeholder="minutos">
+                </td>
+                <td class="form-group has-warning">
+                    <input data-day="jueves" type="number"
+                           class="form-control text-center floating-label iTD"
+                           placeholder="minutos">
+                </td>
+                <td class="form-group has-warning">
+                    <input data-day="viernes" type="number"
+                           class="form-control text-center floating-label iTD"
+                           placeholder="minutos">
+                </td>
+            </tr>
+
+            <tr class="row-retribuido success">
+                <th class="vertical">
+                    <p data-toggle="tooltip" data-placement="right" title="Ausencias justificadas diferentes a: desayuno (016)">Retribuido</p>
+
+                    <p class="mini">No desayuno</p>
+                </th>
+                <td>
+                    <input data-day="lunes" type="number"
+                           class="form-control text-center floating-label iTR"
+                           placeholder="minutos">
+                </td>
+                <td>
+                    <input data-day="martes" type="number"
+                           class="form-control text-center floating-label iTR"
+                           placeholder="minutos">
+                </td>
+                <td>
+                    <input data-day="miercoles" type="number"
+                           class="form-control text-center floating-label iTR"
+                           placeholder="minutos">
+                </td>
+                <td>
+                    <input data-day="jueves" type="number"
+                           class="form-control text-center floating-label iTR"
+                           placeholder="minutos">
+                </td>
+                <td>
+                    <input data-day="viernes" type="number"
+                           class="form-control text-center floating-label iTR"
+                           placeholder="minutos">
+                </td>
+            </tr>
+
+            <tr class="row-hecho active top4"></tr>
+            </tbody>
+        </table>
+
+        <div class="row">
+            <p class="col-sm-6"><span id=""></span></p>
+
+            <p class="text-right lastUpdateTime col-sm-5">Última actualización: <span
+                    id="actualizado"></span></p>
+        </div>
+    </div>
+</div>
+
+<div id="kIFrame">
+    <!-- http://srv-tornos/EVALOSNET/SuiteKiosko/Kiosco.htm-->
+    <iframe id="iframe" src="" width="800px" height="500px" frameborder="0"></iframe>
+</div>
+
+<!--<div id="kConfig">-->
+<!--<iframe id="iframeConfig" src="" width="800px" height="500px"-->
+<!--frameborder="0"></iframe>-->
+<!--</div>-->
+
+<!-- build:js scripts/vendor.js -->
+<script src="scripts/utils.js"></script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/bootstrap.min.js"></script>
+<script src="scripts/ripples.min.js"></script>
+<script src="scripts/material.min.js"></script>
+<!-- endbuild -->
+
+<!-- build:js scripts/popup.js -->
+<script src="scripts/popup.js"></script>
+<!-- endbuild -->
+
+</body>
+</html>
