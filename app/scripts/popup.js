@@ -227,8 +227,20 @@ function refreshTable() {
         $('#actualizado').text(data.ultimaActualizacion);
         $('#horaSalida').text(data.horaSalida);
 
+        //Pongo el valor del input de tiempo restante real
+        var objeto = $('#restanteReal');
+        var restanteDesdeUltimoMarcaje = parseInt(objeto.attr('data-restante-ultimo-marcaje')),
+            minutosUltimoMarcaje = parseInt(objeto.attr('data-ultimo-marcaje')),
+            ahora = new Date();
+
+        var minutosActualesHoy = aMinutos(ahora.getHours() + ':' + ahora.getMinutes());
+        var minutosRestantesRealesHoy = restanteDesdeUltimoMarcaje - (minutosActualesHoy - minutosUltimoMarcaje);
+        objeto.val(aHoraMinuto(Math.abs(minutosRestantesRealesHoy)));
+
         //Relanzo el material
         $.material.init();
+
+        minutosActualesHoy = minutosRestantesRealesHoy = ahora = objeto = null;
     }
 }
 
@@ -247,7 +259,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
             if (msg.action === 'finishUpdate') {
                 //Finalizo correctamente. Oculto barra de progreso y muestro botón
                 $('#progress').hide();
-                $('#refreshButton').show();
+                //$('#refreshButton').show();
 
                 //Lanzo el proceso de chequeo de config al segundo
                 setTimeout(checkStatus, 1000);

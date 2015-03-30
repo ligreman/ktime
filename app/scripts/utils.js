@@ -1,4 +1,4 @@
-var debugMode = true;
+var debugMode = false;
 
 function codifica(text) {
     if (text === null) {
@@ -25,7 +25,7 @@ function decodifica(textEncrypt) {
 
 //Convierte una cadena 02:56 a minutos
 function aMinutos(horaminuto) {
-    var patt = /[0-9]{2}:[0-9]{2}/i;
+    var patt = /[0-9]{1,2}:[0-9]{1,2}/i;
     if (horaminuto === null || horaminuto === '' || !patt.test(horaminuto)) {
         return 0;
     }
@@ -103,6 +103,10 @@ function queDiaEs(index) {
 }
 
 function logger(msg, type) {
+    if (!debugMode) {
+        return null;
+    }
+
     if (type === undefined || type === null) {
         type = 'log';
     }
