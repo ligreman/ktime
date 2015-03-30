@@ -407,9 +407,9 @@ function marcajesToJSON(callback) {
             //Calculo los minutos que realmente faltan por hoy
             minutosRestantesRealesHoy = minutosRestantesDesdeUltimoMarcajeHoy - (minutosActualesHoy - minutosUltimoMarcaje);
 
-            rowRestante += '<td class="form-group has-info padTop15"><input type="text" data-restante="' + restante + '" class="form-control text-center floating-label ' + style + '" placeholder="' + minus + aHoraMinuto(Math.abs(restante)) + '" value="' + minus + aHoraMinuto(Math.abs(minutosRestantesRealesHoy)) + '" disabled="disabled"></td>';
+            rowRestante += '<td class="form-group has-info padTop15"><input type="text" id="restanteReal" data-restante-ultimo-marcaje="' + minutosRestantesDesdeUltimoMarcajeHoy + '" data-ultimo-marcaje="' + minutosUltimoMarcaje + '" class="form-control text-center floating-label ' + style + '" placeholder="' + minus + aHoraMinuto(Math.abs(restante)) + '" value="" disabled="disabled"></td>';
         } else {
-            rowRestante += '<td><span class="' + style + '" data-restante="' + restante + '">' + minus + aHoraMinuto(Math.abs(restante)) + '</span></td>';
+            rowRestante += '<td><span class="' + style + '">' + minus + aHoraMinuto(Math.abs(restante)) + '</span></td>';
         }
     });
 
