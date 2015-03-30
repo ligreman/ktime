@@ -1,10 +1,10 @@
 {
-  "appName": {
-    "message": "Ktime",
-    "description": "The name of the application"
-  },
-  "appDescription": {
-    "message": ":)",
-    "description": "The description of the application"
-  }
+    "appName": {
+        "message": "kTime",
+        "description": "The name of the application"
+    },
+    "appDescription": {
+        "message": ":)",
+        "description": "The description of the application"
+    }
 }

@@ -21,7 +21,7 @@
             "19": "images/icon-19.png",
             "38": "images/icon-38.png"
         },
-        "default_title": "Ktime",
+        "default_title": "kTime",
         "default_popup": "popup.html"
     },
     "content_scripts": [
