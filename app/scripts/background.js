@@ -34,6 +34,8 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
                     }
                 });
                 break;
+            case 'readyCasi':
+                notifica('Sólo 5 minutos más', 'Ya queda poquito...', 'images/icon-128.png');
             case 'readyToGo':
                 chrome.browserAction.setBadgeText({text: '¡Go!'});
                 chrome.browserAction.setBadgeBackgroundColor({color: '#5DA715'});
@@ -429,13 +431,20 @@ function marcajesToJSON(callback) {
             chrome.browserAction.setBadgeText({text: horaSalidaBadge});
             chrome.browserAction.setBadgeBackgroundColor({color: '#111111'});
 
-            //Alarma de hora de salida
+            //Alarma de hora de salida y la de 5 minutos antes
             var trozos = horaSalida.split(':'),
                 salidaEs = new Date();
             salidaEs.setHours(trozos[0]);
             salidaEs.setMinutes(trozos[1]);
             logger('Hora salida ' + horaSalida);
             logger(salidaEs);
+            
+            //5 min antes
+            chrome.alarms.create('readyCasi', {
+                when: salidaEs.getTime() - (5 * 60 * 1000)
+            });
+            
+            //Salida
             chrome.alarms.create('readyToGo', {
                 when: salidaEs.getTime()
             });
