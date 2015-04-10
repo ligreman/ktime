@@ -409,7 +409,9 @@ function marcajesToJSON(callback) {
             //Calculo los minutos que realmente faltan por hoy
             minutosRestantesRealesHoy = minutosRestantesDesdeUltimoMarcajeHoy - (minutosActualesHoy - minutosUltimoMarcaje);
 
-            rowRestante += '<td class="form-group has-info padTop15"><input type="text" id="restanteReal" data-restante-ultimo-marcaje="' + minutosRestantesDesdeUltimoMarcajeHoy + '" data-ultimo-marcaje="' + minutosUltimoMarcaje + '" class="form-control text-center floating-label ' + style + '" placeholder="' + minus + aHoraMinuto(Math.abs(restante)) + '" value="" disabled="disabled"></td>';
+            //rowRestante += '<td class="form-group has-info padTop15"><input type="text" id="restanteReal" data-restante-ultimo-marcaje="' + minutosRestantesDesdeUltimoMarcajeHoy + '" data-ultimo-marcaje="' + minutosUltimoMarcaje + '" class="form-control text-center floating-label ' + style + '" placeholder="' + minus + aHoraMinuto(Math.abs(restante)) + '" value="" disabled="disabled"></td>';
+
+            rowRestante += '<td><span id="restanteReal" data-restante-ultimo-marcaje="' + minutosRestantesDesdeUltimoMarcajeHoy + '" data-ultimo-marcaje="' + minutosUltimoMarcaje + '" class="' + style + '" title="Desde el último marcaje de entrada: ' + minus + aHoraMinuto(Math.abs(restante)) + '"></span></td>';
         } else {
             rowRestante += '<td><span class="' + style + '">' + minus + aHoraMinuto(Math.abs(restante)) + '</span></td>';
         }
@@ -438,12 +440,12 @@ function marcajesToJSON(callback) {
             salidaEs.setMinutes(trozos[1]);
             logger('Hora salida ' + horaSalida);
             logger(salidaEs);
-            
+
             //5 min antes
             chrome.alarms.create('readyCasi', {
                 when: salidaEs.getTime() - (5 * 60 * 1000)
             });
-            
+
             //Salida
             chrome.alarms.create('readyToGo', {
                 when: salidaEs.getTime()
