@@ -36,6 +36,7 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
                 break;
             case 'readyCasi':
                 notifica('Sólo 5 minutos más', 'Ya queda poquito...', 'images/icon-128.png');
+                break;
             case 'readyToGo':
                 chrome.browserAction.setBadgeText({text: '¡Go!'});
                 chrome.browserAction.setBadgeBackgroundColor({color: '#5DA715'});
