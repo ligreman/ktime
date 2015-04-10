@@ -235,7 +235,15 @@ function refreshTable() {
 
         var minutosActualesHoy = aMinutos(ahora.getHours() + ':' + ahora.getMinutes());
         var minutosRestantesRealesHoy = restanteDesdeUltimoMarcaje - (minutosActualesHoy - minutosUltimoMarcaje);
-        objeto.val(aHoraMinuto(Math.abs(minutosRestantesRealesHoy)));
+        //objeto.val(aHoraMinuto(Math.abs(minutosRestantesRealesHoy)));
+        objeto.text(aHoraMinuto(Math.abs(minutosRestantesRealesHoy)));
+
+        //Lo hecho a lo largo de toda la semana
+        var minutosSemana = 0;
+        $('tbody .row-hecho td').each(function () {
+            minutosSemana += parseInt($(this).attr('data-minutos'));
+        });
+        $('#weekTime').text(aHoraMinuto(minutosSemana));
 
         //Relanzo el material
         $.material.init();
@@ -295,8 +303,9 @@ function horasSemanaDeseado() {
         minutos += aMinutos($(this).val());
     });
     logger('minutejos: ' + minutos);
-    var horas = minutos / 60;
-    $('#horas-semana').text(horas.toFixed(1));
+    //var horas = minutos / 60;
+    //$('#horas-semana').text(horas.toFixed(1));
+    $('#horas-semana').text(aHoraMinuto(minutos));
 }
 
 function valoresPorDefecto() {
