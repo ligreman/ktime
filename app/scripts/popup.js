@@ -239,9 +239,25 @@ function refreshTable() {
         objeto.text(aHoraMinuto(Math.abs(minutosRestantesRealesHoy)));
 
         //Lo hecho a lo largo de toda la semana
-        var minutosSemana = 0;
+        var minutosSemana = 0, minutosHoy = 0;
         $('tbody .row-hecho td').each(function () {
-            minutosSemana += parseInt($(this).attr('data-minutos'));
+            minutosHoy += parseInt($(this).attr('data-minutos'));
+
+            //Dependiendo de lo que esté en tiempo deseado hoy...
+            var hoyEs = $(this).attr('data-day');
+            var deseadoHoy = aMinutos($('.iVD[data-day="' + hoyEs + '"]').val());
+
+            //7 horas son 420min, 9 horas son 540min
+            //Como mucho 9 horas sea cual sea el motivo
+            minutosHoy = Math.min(minutosHoy, 540);
+
+            //Si quiero hacer 7 horas hoy (jornada de mañana)
+            if (deseadoHoy <= 420) {
+                //TODO cartelito al pie del input que ponga continua/partida según sea la jornada
+                minutosHoy = Math.max(minutosHoy, 420); //En j.mañana máximo de 7 horas
+            }
+
+            minutosSemana += minutosHoy;
         });
         $('#weekTime').text(aHoraMinuto(minutosSemana));
 
@@ -297,10 +313,21 @@ function progreso(valor) {
 
 function horasSemanaDeseado() {
     //Hago la suma de los tiempos deseados. No compruebo si es correcta o no.
-    var minutos = 0;
+    var minutos = 0, minutosHoy = 0;
     $('input.iVD').each(function () {
         logger($(this).val());
-        minutos += aMinutos($(this).val());
+        minutosHoy = aMinutos($(this).val());
+        minutos += minutosHoy;
+
+        //Cartelicos de jornada continua o partida
+        var elem = $(this).parent('div').parent('th');
+        if (minutosHoy <= 420) {
+            elem.find('p.continua').show();
+            elem.find('p.partida').hide();
+        } else {
+            elem.find('p.partida').show();
+            elem.find('p.continua').hide();
+        }
     });
     logger('minutejos: ' + minutos);
     //var horas = minutos / 60;

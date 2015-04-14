@@ -362,13 +362,13 @@ function marcajesToJSON(callback) {
 
         var minsHechos = (dia.minutosTotales === null) ? 0 : parseInt(dia.minutosTotales),
             minsRetribuidosDes = (dia.retribuidoDesayuno === null) ? 0 : parseInt(dia.retribuidoDesayuno),
-            htmlRestris = '';
+            htmlRetris = '';
 
         if (minsRetribuidosDes > 0) {
-            htmlRestris += ' <i class="mdi-action-restore" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
+            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
         }
 
-        rowHecho += '<td data-minutos="' + minsHechos + '">' + formatTime(dia.horas) + ':' + formatTime(dia.minutos) + htmlRestris + '</td>';
+        rowHecho += '<td data-day="' + queDiaEs(index) + '" data-minutos="' + minsHechos + '">' + formatTime(dia.horas) + ':' + formatTime(dia.minutos) + htmlRetris + '</td>';
         dataHechos.push({
             dia: queDiaEs(index),
             minutos: minsHechos,
