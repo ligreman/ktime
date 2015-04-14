@@ -132,6 +132,17 @@ tr.top4 th, tr.top4 td {
     vertical-align: middle;
 }
 
+#marcajes-data th.has-info {
+    padding-bottom: 0 !important;
+}
+
+#marcajes-data th.has-info p.jornada {
+    font-size: 0.7em;
+    margin: 5px 0 0 0;
+    padding: 0;
+    font-weight: normal;
+}
+
 th.mini {
     text-align: left !important;
     font-weight: normal;
