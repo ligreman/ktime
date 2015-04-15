@@ -35,7 +35,7 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
                 });
                 break;
             case 'readyCasi':
-                notifica('Sólo 5 minutos más', 'Ya queda poquito...', 'images/icon-128.png');
+                notifica('Sólo unos minutos más', 'Ya queda poquito...', 'images/icon-128.png');
                 break;
             case 'readyToGo':
                 chrome.browserAction.setBadgeText({text: '¡Go!'});
@@ -296,18 +296,26 @@ function processMarkTable(stringHtml) {
 }
 
 function notifica(titulo, mensaje, icono) {
-    chrome.notifications.create('kt', {
-        type: 'basic',
-        title: titulo,
-        message: mensaje,
-        iconUrl: icono
-    }, function (notificationId) {
-    });
+    //Si están desactivadas las notificaciones no notifico
+    var config = decodifica(localStorage.getItem('kconfig'));
+
+    if (config.notifications === true) {
+        chrome.notifications.create('kt', {
+            type: 'basic',
+            title: titulo,
+            message: mensaje,
+            iconUrl: icono
+        }, function (notificationId) {
+        });
+    }
 }
 
 
 function marcajesToJSON(callback) {
-    var marcajesData = decodifica(localStorage.getItem('kmarcajes'));
+    var marcajesData = decodifica(localStorage.getItem('kmarcajes')),
+        config = decodifica(localStorage.getItem('kconfig'));
+    logger('Configuracion leida');
+    logger(config);
     logger('Todos los marcajes');
     /* Array
      fecha: "09/03/2015"
@@ -334,6 +342,8 @@ function marcajesToJSON(callback) {
             ultimoMarcajeDelDia = dia.ultimoMarcaje;
         }
 
+        var minutosAntes8 = 0, minutosDespues9 = 0;
+
         //Si los datos son null pondré celdas en blanco
         if (dia.marcas === null) {
             rowMarcas += '<td></td>'; //vacío
@@ -357,6 +367,14 @@ function marcajesToJSON(callback) {
                         marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-hardware-keyboard-control"></i>';
                 }
                 marcasDelDia += '</p>';
+
+                //Miro a ver si entré antes de las 8 o salí después de las 21
+                if (aMinutos(marca.time) < 480) {
+                    minutosAntes8 = 480 - aMinutos(marca.time);
+                }
+                if (aMinutos(marca.time) > 1260) {
+                    minutosDespues9 = aMinutos(marca.time) - 1260;
+                }
             });
             rowMarcas += '<td>' + marcasDelDia + '</td>';
         }
@@ -368,6 +386,11 @@ function marcajesToJSON(callback) {
         if (minsRetribuidosDes > 0) {
             htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
         }
+
+        //Quito el tiempo que he hecho fuera de los horarios permitidos
+        logger("antes: " + minutosAntes8);
+        logger("despues: " + minutosDespues9);
+        minsHechos = minsHechos - minutosAntes8 - minutosDespues9;
 
         rowHecho += '<td data-day="' + queDiaEs(index) + '" data-minutos="' + minsHechos + '">' + formatTime(dia.horas) + ':' + formatTime(dia.minutos) + htmlRetris + '</td>';
         dataHechos.push({
@@ -395,7 +418,7 @@ function marcajesToJSON(callback) {
         logger(loHecho);
 
         //El restante = hecho - descontado + retribuido
-        var restante = loDeseado[eldia] - loHecho.minutos + parseInt(loDescontado[eldia]) - parseInt(loRetribuido[eldia]),
+        var restante = loDeseado[eldia].minutos - loHecho.minutos + parseInt(loDescontado[eldia]) - parseInt(loRetribuido[eldia]),
             style = '', minus = '';
 
         if (restante <= 0) {
@@ -442,9 +465,10 @@ function marcajesToJSON(callback) {
             logger('Hora salida ' + horaSalida);
             logger(salidaEs);
 
+            logger('Alarma en: ' + config.notificationTime);
             //5 min antes
             chrome.alarms.create('readyCasi', {
-                when: salidaEs.getTime() - (5 * 60 * 1000)
+                when: salidaEs.getTime() - (config.notificationTime * 60 * 1000)
             });
 
             //Salida
@@ -471,7 +495,7 @@ function marcajesToJSON(callback) {
     };
     localStorage.setItem('kdata', codifica(finalJson));
     sendProgreso(100, whoAsked);
-
+    logger(finalJson);
     //Limpieza
     marcajesData = informacion = thead = rowMarcas = rowHecho = rowRestante = dataHechos = hoyEs = ultimoMarcajeDelDia = numHoyEs = loDescontado = loRetribuido = minutosRestantesDesdeUltimoMarcajeHoy = loDeseado = minutosUltimoMarcaje = ultimaActu = horaSalida = null;
 

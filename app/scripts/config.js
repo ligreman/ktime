@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('logout').addEventListener('click', logOut);
     document.getElementById('kAutoUpdate').addEventListener('click', configChange);
     document.getElementById('kAutoUpdateTime').addEventListener('click', configChange);
+    document.getElementById('kNotifications').addEventListener('click', configChange);
+    document.getElementById('kNotificationTime').addEventListener('click', configChange);
 });
 
 var thisUser, thisPassword, iAm = 'login';
@@ -27,7 +29,6 @@ var saveConfiguration = function saveConfiguration() {
     //Cojo del formulario el usuario y pass
     thisUser = document.getElementById('kUser').value;
     thisPassword = document.getElementById('kPass').value;
-
     //Pongo valores por defecto
     initializeLocalStorage();
 
@@ -101,7 +102,9 @@ function checkConfigStatus(error) {
     if (localConfig === null || localConfig === '') {
         localConfig = {
             autoupdate: false,
-            autoupdatetime: 60
+            autoupdatetime: 60,
+            notifications: true,
+            notitifactionTime: 5
         };
         localStorage.setItem('kconfig', codifica(localConfig));
     }
@@ -125,6 +128,8 @@ function checkConfigStatus(error) {
         document.getElementById('kPass').value = localData.password;
         document.getElementById('kAutoUpdate').checked = localConfig.autoupdate;
         document.getElementById('kAutoUpdateTime').value = localConfig.autoupdatetime;
+        document.getElementById('kNotifications').checked = localConfig.notifications;
+        document.getElementById('kNotificationTime').value = localConfig.notificationTime;
 
         logger(localData);
     }
@@ -155,7 +160,8 @@ var logOut = function (error) {
 function configChange() {
     var autoupdate = document.getElementById('kAutoUpdate').checked,
         autotime = parseInt(document.getElementById('kAutoUpdateTime').value),
-    //notifications = document.getElementById('kNotifications').checked,
+        notifications = document.getElementById('kNotifications').checked,
+        notificationTime = parseInt(document.getElementById('kNotificationTime').value),
         newConfig = {};
 
     //Actualizo la configuración
@@ -169,6 +175,18 @@ function configChange() {
         newConfig.autoupdatetime = autotime;
     } else {
         newConfig.autoupdatetime = 60;
+    }
+
+    if (notifications === true || notifications === false) {
+        newConfig.notifications = notifications;
+    } else {
+        newConfig.notifications = false;
+    }
+
+    if (!isNaN(notificationTime)) {
+        newConfig.notificationTime = notificationTime;
+    } else {
+        newConfig.notificationTime = 5;
     }
 
     //Aviso del cambio al background para los timer
@@ -190,7 +208,11 @@ function initializeLocalStorage() {
 
     if (ktabledesiredtime === null) {
         localStorage.setItem('ktabledesiredtime', {
-            lunes: 480, martes: 480, miercoles: 480, jueves: 480, viernes: 420
+            lunes: {minutos: 480, jornadaContinua: false},
+            martes: {minutos: 480, jornadaContinua: false},
+            miercoles: {minutos: 480, jornadaContinua: false},
+            jueves: {minutos: 480, jornadaContinua: false},
+            viernes: {minutos: 420, jornadaContinua: true}
         });
     }
     if (ktablediscounttime === null) {
