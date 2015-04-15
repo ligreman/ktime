@@ -136,11 +136,16 @@ tr.top4 th, tr.top4 td {
     padding-bottom: 0 !important;
 }
 
-#marcajes-data th.has-info p.jornada {
+#marcajes-data th p.jornada {
+    margin: 0;
+}
+
+#marcajes-data th p.jornada label {
     font-size: 0.7em;
-    margin: 5px 0 0 0;
+    margin: 0;
     padding: 0;
     font-weight: normal;
+    cursor: pointer;
 }
 
 th.mini {
@@ -224,4 +229,8 @@ th.mini {
 #configTableButton i {
     font-size: 1.3em;
     vertical-align: text-bottom;
+}
+
+.valignsub {
+    vertical-align: sub;
 }

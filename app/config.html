@@ -19,8 +19,7 @@
         <h3>Configuración de kTime</h3>
 
         <div class="checkbox">
-            <label><input type="checkbox" id="kAutoUpdate" name="kAutoUpdate"/> <strong>Actualizar
-                automáticamente</strong></label>
+            <label><input type="checkbox" id="kAutoUpdate" name="kAutoUpdate"/> <strong>Actualizar automáticamente</strong></label>
         </div>
         <p class="hint">Actualizar de forma automática los marcajes cada cierto tiempo.</p>
 
@@ -33,10 +32,12 @@
             </select>
         </div>
 
-        <!--<div class="checkbox">
+        <div class="checkbox">
             <label><input type="checkbox" id="kNotifications" name="kNotifications"/> <strong>Mostrar notificaciones</strong></label>
         </div>
-        <p class="hint">Mostrar avisos cuando quede una hora, un cuarto de hora y cuando cumplas el tiempo de trabajo.</p>-->
+        <p class="hint">Mostrar avisos cuando queden <input type="text" size="1" id="kNotificationTime" name="kNotificationTime" value="5" class=""> minutos
+            para salir.
+        </p>
     </div>
     <div class="bloques well-default col-sm-6">
         <!--<h2>Acceso al kiosko</h2>-->

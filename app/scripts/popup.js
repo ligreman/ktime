@@ -34,19 +34,27 @@ $(document).ready(function () {
 
             $(this).val(formatInputTime(datos));
         });
+    $('input.ipVD')
+        .on('change', function () {
+            $('#configSaveButton').show();
+        });
 
     $('#configSaveButton').on('click', function () {
         //Guardo los días deseados en localStorage
         var data = {};
 
         $('input.iVD').each(function () {
-            var dia = $(this).attr('data-day');
-            data[dia] = aMinutos($(this).val());
+            var dia = $(this).attr('data-day'),
+                jornada = $(this).parent('div').parent('th').find('input.ipVD').is(':checked');
+            data[dia] = {
+                minutos: aMinutos($(this).val()),
+                jornadaContinua: jornada
+            };
         });
 
         localStorage.setItem('ktabledesiredtime', codifica(data));
 
-        configTable();
+        desiredTimeConfig();
 
         //Le digo al background que he cambiado los datos para que actualize el localStorage
         chrome.runtime.sendMessage(
@@ -129,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //document.getElementById('refreshButton').addEventListener('click', refreshMarcajes);
     $('#refreshButton, #refreshButton2').on('click', refreshMarcajes);
     //document.getElementById('configButton').addEventListener('click', configuration);
-    document.getElementById('configTableButton').addEventListener('click', configTable);
+    document.getElementById('desiredTableButton').addEventListener('click', desiredTimeConfig);
     //document.getElementById('prueba').addEventListener('click', prueba);
 });
 
@@ -214,7 +222,8 @@ function refreshMarcajes() {
 }
 
 function refreshTable() {
-    var data = decodifica(localStorage.getItem('kdata'));
+    var data = decodifica(localStorage.getItem('kdata')),
+        deseado = decodifica(localStorage.getItem('ktabledesiredtime'));
 
     if (data !== null && data !== '') {
         //Pinto los datos en las diferentes zonas
@@ -241,20 +250,17 @@ function refreshTable() {
         //Lo hecho a lo largo de toda la semana
         var minutosSemana = 0, minutosHoy = 0;
         $('tbody .row-hecho td').each(function () {
-            minutosHoy += parseInt($(this).attr('data-minutos'));
+            minutosHoy = parseInt($(this).attr('data-minutos'));
 
             //Dependiendo de lo que esté en tiempo deseado hoy...
             var hoyEs = $(this).attr('data-day');
-            var deseadoHoy = aMinutos($('.iVD[data-day="' + hoyEs + '"]').val());
+            var deseadoHoy = deseado[hoyEs];
 
-            //7 horas son 420min, 9 horas son 540min
-            //Como mucho 9 horas sea cual sea el motivo
-            minutosHoy = Math.min(minutosHoy, 540);
-
-            //Si quiero hacer 7 horas hoy (jornada de mañana)
-            if (deseadoHoy <= 420) {
-                //TODO cartelito al pie del input que ponga continua/partida según sea la jornada
-                minutosHoy = Math.max(minutosHoy, 420); //En j.mañana máximo de 7 horas
+            //Si es jornada continua max 7 horas, partida 9
+            if (deseadoHoy.jornadaContinua) {
+                minutosHoy = Math.min(minutosHoy, 420);
+            } else {
+                minutosHoy = Math.min(minutosHoy, 540);
             }
 
             minutosSemana += minutosHoy;
@@ -299,7 +305,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     }
 );
 
-function configTable() {
+function desiredTimeConfig() {
     $('#configSaveButton').hide();
     $('#marcajes-data').find('tr.config').toggle(500);
     horasSemanaDeseado();
@@ -316,18 +322,7 @@ function horasSemanaDeseado() {
     var minutos = 0, minutosHoy = 0;
     $('input.iVD').each(function () {
         logger($(this).val());
-        minutosHoy = aMinutos($(this).val());
-        minutos += minutosHoy;
-
-        //Cartelicos de jornada continua o partida
-        var elem = $(this).parent('div').parent('th');
-        if (minutosHoy <= 420) {
-            elem.find('p.continua').show();
-            elem.find('p.partida').hide();
-        } else {
-            elem.find('p.partida').show();
-            elem.find('p.continua').hide();
-        }
+        minutos += aMinutos($(this).val());
     });
     logger('minutejos: ' + minutos);
     //var horas = minutos / 60;
@@ -336,10 +331,17 @@ function horasSemanaDeseado() {
 }
 
 function valoresPorDefecto() {
+    logger('Valores por defecto');
     var dataDesired = decodifica(localStorage.getItem('ktabledesiredtime')),
         dataDiscount = decodifica(localStorage.getItem('ktablediscounttime')),
         dataRetribution = decodifica(localStorage.getItem('ktableretributiontime')),
-        plantilla = {lunes: 0, martes: 0, miercoles: 0, jueves: 0, viernes: 0};
+        plantilla = {
+            lunes: {minutos: 0, jornadaContinua: false},
+            martes: {minutos: 0, jornadaContinua: false},
+            miercoles: {minutos: 0, jornadaContinua: false},
+            jueves: {minutos: 0, jornadaContinua: false},
+            viernes: {minutos: 0, jornadaContinua: false}
+        };
 
     if (dataDesired === null || dataDesired === '') {
         dataDesired = plantilla;
@@ -354,12 +356,28 @@ function valoresPorDefecto() {
         localStorage.setItem('ktableretributiontime', codifica(plantilla));
     }
 
+    logger(dataDesired);
     //Inputs de tiempo deseado
-    $('input.iVD[data-day="lunes"]').val(aHoraMinuto(dataDesired.lunes));
-    $('input.iVD[data-day="martes"]').val(aHoraMinuto(dataDesired.martes));
-    $('input.iVD[data-day="miercoles"]').val(aHoraMinuto(dataDesired.miercoles));
-    $('input.iVD[data-day="jueves"]').val(aHoraMinuto(dataDesired.jueves));
-    $('input.iVD[data-day="viernes"]').val(aHoraMinuto(dataDesired.viernes));
+    $('input.iVD[data-day="lunes"]').val(aHoraMinuto(dataDesired.lunes.minutos));
+    $('input.iVD[data-day="martes"]').val(aHoraMinuto(dataDesired.martes.minutos));
+    $('input.iVD[data-day="miercoles"]').val(aHoraMinuto(dataDesired.miercoles.minutos));
+    $('input.iVD[data-day="jueves"]').val(aHoraMinuto(dataDesired.jueves.minutos));
+    $('input.iVD[data-day="viernes"]').val(aHoraMinuto(dataDesired.viernes.minutos));
+    if (dataDesired.lunes.jornadaContinua) {
+        $('input.ipVD[data-day="lunes"]').attr('checked', 'checked');
+    }
+    if (dataDesired.martes.jornadaContinua) {
+        $('input.ipVD[data-day="martes"]').attr('checked', 'checked');
+    }
+    if (dataDesired.miercoles.jornadaContinua) {
+        $('input.ipVD[data-day="miercoles"]').attr('checked', 'checked');
+    }
+    if (dataDesired.jueves.jornadaContinua) {
+        $('input.ipVD[data-day="jueves"]').attr('checked', 'checked');
+    }
+    if (dataDesired.viernes.jornadaContinua) {
+        $('input.ipVD[data-day="viernes"]').attr('checked', 'checked');
+    }
 
     $('input.iTD[data-day="lunes"]').val(dataDiscount.lunes);
     $('input.iTD[data-day="martes"]').val(dataDiscount.martes);

@@ -69,9 +69,9 @@
             <strong>Hora estimada de salida:</strong> <span id="horaSalida">19:35</span>
         </div>
         <p class="text-right col-sm-7">
-            <button id="configSaveButton" class="btn btn-success btn-xs btn-flat nomargin mright"><i class="mdi-navigation-check"></i> Guardar cambios
+            <button id="configSaveButton" class="btn btn-success btn-xs nomargin mright"><i class="mdi-navigation-check"></i> Guardar cambios
             </button>
-            <button id="configTableButton" class="btn btn-info btn-xs btn-raised nomargin mright10"><i class="mdi-device-access-time"></i> Tiempos deseados
+            <button id="desiredTableButton" class="btn btn-info btn-xs btn-raised nomargin mright10"><i class="mdi-device-access-time"></i> Tiempos deseados
             </button>
         </p>
 
@@ -86,45 +86,51 @@
                            class="form-control text-center floating-label iVD"
                            placeholder="horas:minutos">
 
-                    <p class="jornada continua">jornada continua</p>
+                    <p class="jornada"><label>
+                        <input class="valignsub ipVD" data-day="lunes"
+                               type="checkbox"/> jornada continua
+                    </label></p>
 
-                    <p class="jornada partida">jornada partida</p>
                 </th>
                 <th class="form-group has-info">
                     <input data-day="martes" type="time"
                            class="form-control text-center floating-label iVD"
                            placeholder="horas:minutos">
 
-                    <p class="jornada continua">jornada continua</p>
-
-                    <p class="jornada partida">jornada partida</p>
+                    <p class="jornada"><label>
+                        <input class="valignsub ipVD" data-day="martes"
+                               type="checkbox"/> jornada continua
+                    </label></p>
                 </th>
                 <th class="form-group has-info">
                     <input data-day="miercoles" type="time"
                            class="form-control text-center floating-label iVD"
                            placeholder="horas:minutos">
 
-                    <p class="jornada continua">jornada continua</p>
-
-                    <p class="jornada partida">jornada partida</p>
+                    <p class="jornada"><label>
+                        <input class="valignsub ipVD" data-day="miercoles"
+                               type="checkbox"/> jornada continua
+                    </label></p>
                 </th>
                 <th class="form-group has-info">
                     <input data-day="jueves" type="time"
                            class="form-control text-center floating-label iVD"
                            placeholder="horas:minutos">
 
-                    <p class="jornada continua">jornada continua</p>
-
-                    <p class="jornada partida">jornada partida</p>
+                    <p class="jornada"><label>
+                        <input class="valignsub ipVD" data-day="jueves"
+                               type="checkbox"/> jornada continua
+                    </label></p>
                 </th>
                 <th class="form-group has-info">
                     <input data-day="viernes" type="time"
                            class="form-control text-center floating-label iVD"
                            placeholder="horas:minutos">
 
-                    <p class="jornada continua">jornada continua</p>
-
-                    <p class="jornada partida">jornada partida</p>
+                    <p class="jornada"><label>
+                        <input class="valignsub ipVD" data-day="viernes"
+                               type="checkbox"/> jornada continua
+                    </label></p>
                 </th>
             </tr>
             <tr class="dates"></tr>
@@ -208,16 +214,17 @@
                 </td>
             </tr>
 
-            <tr class="row-hecho active top4"></tr>
+            <tr class="row-hecho active top4" title="No cuenta el tiempo antes de las 8:00 ni después de las 21:00"
+                data-toggle="tooltip"
+                data-placement="top"></tr>
             </tbody>
         </table>
 
         <div class="row">
             <p class="col-sm-1"></p>
 
-            <p class="col-sm-4 lastUpdateTime text-info">Tiempo hecho esta semana <span
-                    id="weekTime"
-                    title="Tiempo hasta el último marcaje de entrada de la semana"></span>
+            <p class="col-sm-4 lastUpdateTime text-info" data-toggle="tooltip" title="Tiempo hasta el último marcaje de entrada de la semana">
+                Tiempo hecho esta semana <span id="weekTime"></span>
             </p>
 
             <p class="col-sm-1"></p>
