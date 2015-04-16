@@ -415,7 +415,10 @@ function marcajesToJSON(callback) {
     $(dataHechos).each(function (index, loHecho) {
         var eldia = loHecho.dia;
 
+        logger('Lo hecho');
         logger(loHecho);
+        logger('Lo deseado');
+        logger(loDeseado);
 
         //El restante = hecho - descontado + retribuido
         var restante = loDeseado[eldia].minutos - loHecho.minutos + parseInt(loDescontado[eldia]) - parseInt(loRetribuido[eldia]),
@@ -425,6 +428,8 @@ function marcajesToJSON(callback) {
             style = 'verde';
             minus = '- ';
         }
+
+        logger('Restante: ' + restante);
 
         //Cojo lo restante del día de hoy
         if (numHoyEs === index) {
@@ -466,6 +471,7 @@ function marcajesToJSON(callback) {
             logger(salidaEs);
 
             logger('Alarma en: ' + config.notificationTime);
+            logger('Alarma time: ' + salidaEs.getTime());
             //5 min antes
             chrome.alarms.create('readyCasi', {
                 when: salidaEs.getTime() - (config.notificationTime * 60 * 1000)
@@ -656,3 +662,19 @@ function tiempoEntreMarcajes(entrada, salida) {
 
     return Math.abs(minutos);
 }
+
+
+//Hacer cosas al actualizar
+chrome.runtime.onInstalled.addListener(function (details) {
+    //Si se ha actualizado la extensión
+    if (details.reason === 'update') {
+        //v1.0.6
+        if (previousVersion === '1.0.5') {
+            var plantilla2 = {
+                lunes: 0, martes: 0, miercoles: 0, jueves: 0, viernes: 0
+            };
+            localStorage.setItem('ktablediscounttime', codifica(plantilla2));
+            localStorage.setItem('ktableretributiontime', codifica(plantilla2));
+        }
+    }
+});
