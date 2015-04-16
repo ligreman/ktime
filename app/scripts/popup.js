@@ -341,6 +341,9 @@ function valoresPorDefecto() {
             miercoles: {minutos: 0, jornadaContinua: false},
             jueves: {minutos: 0, jornadaContinua: false},
             viernes: {minutos: 0, jornadaContinua: false}
+        },
+        plantilla2 = {
+            lunes: 0, martes: 0, miercoles: 0, jueves: 0, viernes: 0
         };
 
     if (dataDesired === null || dataDesired === '') {
@@ -349,11 +352,11 @@ function valoresPorDefecto() {
     }
     if (dataDiscount === null || dataDiscount === '') {
         dataDiscount = plantilla;
-        localStorage.setItem('ktablediscounttime', codifica(plantilla));
+        localStorage.setItem('ktablediscounttime', codifica(plantilla2));
     }
     if (dataRetribution === null || dataRetribution === '') {
         dataRetribution = plantilla;
-        localStorage.setItem('ktableretributiontime', codifica(plantilla));
+        localStorage.setItem('ktableretributiontime', codifica(plantilla2));
     }
 
     logger(dataDesired);
