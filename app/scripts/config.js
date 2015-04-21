@@ -99,7 +99,7 @@ function checkConfigStatus(error) {
         localConfig = decodifica(localStorage.getItem('kconfig'));
 
     //Si no hay config local creo uno por defecto
-    if (localConfig === null || localConfig === '') {
+    if (localConfig === undefined || localConfig === null || localConfig === '') {
         localConfig = {
             autoupdate: false,
             autoupdatetime: 60,
@@ -123,6 +123,8 @@ function checkConfigStatus(error) {
         $('#logout').show();
         $('#progress').hide();
 
+        logger('Pongo valores guardados en checkConfig');
+
         //Pongo los valores en los campos
         document.getElementById('kUser').value = localData.user;
         document.getElementById('kPass').value = localData.password;
@@ -132,6 +134,7 @@ function checkConfigStatus(error) {
         document.getElementById('kNotificationTime').value = localConfig.notificationTime;
 
         logger(localData);
+        logger(localConfig);
     }
 }
 

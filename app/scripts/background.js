@@ -175,7 +175,14 @@ function needUpdate() {
     logger('needeo update?');
     var ultimoUpdate = parseInt(localStorage.getItem('klastdataupdatetime')),
         config = decodifica(localStorage.getItem('kconfig')),
+        login = decodifica(localStorage.getItem('klogin')),
         ahora = new Date();
+
+    if (login === undefined || login === null) {
+        //Recién instalado, no hago nada hasta que configure
+        logger('el sistema no está configurado');
+        return null;
+    }
 
     if (isNaN(ultimoUpdate)) {
         logger('necesito actualizar por no tener datos de lasttime');
@@ -363,6 +370,11 @@ function marcajesToJSON(callback) {
                     case '016':
                         marcasDelDia += '<img class="mini" title="Código ' + marca.code + '" src="images/coffee.png" />';
                         break;
+                    case '002':
+                    case '003':
+                    case '014':
+                        marcasDelDia += '<img class="mini" title="Código ' + marca.code + '" src="images/medico.png" />';
+                        break;
                     default:
                         marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-hardware-keyboard-control"></i>';
                 }
@@ -381,10 +393,17 @@ function marcajesToJSON(callback) {
 
         var minsHechos = (dia.minutosTotales === null) ? 0 : parseInt(dia.minutosTotales),
             minsRetribuidosDes = (dia.retribuidoDesayuno === null) ? 0 : parseInt(dia.retribuidoDesayuno),
-            htmlRetris = '';
+            minsRetribuidosMedico = (dia.retribuidoMedico === null) ? 0 : parseInt(dia.retribuidoMedico),
+            htmlRetris = '', titleRetris = '';
 
         if (minsRetribuidosDes > 0) {
-            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
+            titleRetris += 'Retribuido por desayuno: ' + minsRetribuidosDes + ' min';
+        }
+        if (minsRetribuidosMedico > 0) {
+            titleRetris += '; Retribuido por médicos: ' + minsRetribuidosMedico + ' min';
+        }
+        if (titleRetris !== '') {
+            htmlRetris += ' <i class="mdi-action-restore" title="' + titleRetris + '" data-toggle="tooltip"></i>';
         }
 
         //Quito el tiempo que he hecho fuera de los horarios permitidos
@@ -396,7 +415,8 @@ function marcajesToJSON(callback) {
         dataHechos.push({
             dia: queDiaEs(index),
             minutos: minsHechos,
-            retribuidoDesayuno: minsRetribuidosDes
+            retribuidoDesayuno: minsRetribuidosDes,
+            retribuidoMedico: minsRetribuidosMedico
         });
     });
     sendProgreso(90, whoAsked);
@@ -472,6 +492,11 @@ function marcajesToJSON(callback) {
 
             logger('Alarma en: ' + config.notificationTime);
             logger('Alarma time: ' + salidaEs.getTime());
+
+            if (config.notificationTime === undefined || config.notificationTime === null) {
+                config.notificationTime = 5; //por defecto 5
+            }
+
             //5 min antes
             chrome.alarms.create('readyCasi', {
                 when: salidaEs.getTime() - (config.notificationTime * 60 * 1000)
@@ -526,7 +551,9 @@ function getMarcajesInfo(datos) {
                 horas: null,
                 pendienteSalida: null,
                 retribuidoDesayuno: null,
+                retribuidoMedico: null,
                 code16: null,
+                codeMedico: null,
                 marcas: null,
                 ultimoMarcaje: null
             })
@@ -538,7 +565,9 @@ function getMarcajesInfo(datos) {
                 horas: information.horas,
                 pendienteSalida: information.pendienteSalida,
                 retribuidoDesayuno: information.retribuidoDesayuno,
+                retribuidoMedico: information.retribuidoMedico,
                 code16: information.code16,
+                codeMedico: information.codeMedico,
                 marcas: information.marcas,
                 ultimoMarcaje: information.ultimoMarcaje
             });
@@ -578,9 +607,11 @@ function extractFichajes(row) {
 
 //Procesa los fichajes de un dia para extraer información de horas
 function processFichajes(fichajes) {
-    var minutosHechos = 0, code016 = false, pendiente = null,
-        tiempoRetribuidoDesayuno = 0, entrada016 = null, salida016 = null,
-        entrada = null, salida = null, lastMarcaje = null;
+    var minutosHechos = 0, pendiente = null,
+        tiempoRetribuidoDesayuno = 0, tiempoRetribuidoMedicos = 0,
+        entrada = null, salida = null, lastMarcaje = null,
+        code016 = false, entrada016 = null, salida016 = null,
+        codeMedico = false, entradaMedico = null, salidaMedico = null;
 
     //Sacar las horas hechas
     $.each(fichajes, function (index, value) {
@@ -589,11 +620,15 @@ function processFichajes(fichajes) {
             entrada = value;
             if (value.code === '016') {
                 entrada016 = value;
+            } else if (value.code === '002' || value.code === '003' || value.code === '014') {
+                entradaMedico = value;
             }
         } else if (value.type === 'S' || value.type === 'i') {
             salida = value;
             if (value.code === '016') {
                 salida016 = value;
+            } else if (value.code === '002' || value.code === '003' || value.code === '014') {
+                salidaMedico = value;
             }
         }
 
@@ -619,6 +654,14 @@ function processFichajes(fichajes) {
         tiempoRetribuidoDesayuno = Math.min(minDesayunos, 15);
     }
 
+    //Codigos de médico
+    if (entradaMedico !== null && salidaMedico !== null) {
+        codeMedico = true;
+
+        //Tiempo entre marcajes
+        tiempoRetribuidoMedicos = tiempoEntreMarcajes(entradaMedico, salidaMedico);
+    }
+
     //Miro a ver si me quedó entrada!=null y salida=null
     //que quiere decir que estoy dentro aún
     if (entrada !== null && salida === null) {
@@ -631,10 +674,8 @@ function processFichajes(fichajes) {
         logger('-----------', 'error');
     }
 
-    //Tiempos entre códigos 16 -> añado el tiempo
-    if (code016) {
-        minutosHechos += tiempoRetribuidoDesayuno;
-    }
+    //Añado el tiempo retribuido por cosas "raras"
+    minutosHechos += (tiempoRetribuidoDesayuno + tiempoRetribuidoMedicos);
 
     return {
         minutosTotales: minutosHechos,
@@ -642,7 +683,9 @@ function processFichajes(fichajes) {
         horas: parseInt(minutosHechos / 60), //parte entera, las horas
         pendienteSalida: pendiente,
         retribuidoDesayuno: tiempoRetribuidoDesayuno,
+        retribuidoMedico: tiempoRetribuidoMedicos,
         code16: code016,
+        codeMedico: codeMedico,
         marcas: fichajes,
         ultimoMarcaje: lastMarcaje.time
     };
@@ -665,16 +708,18 @@ function tiempoEntreMarcajes(entrada, salida) {
 
 
 //Hacer cosas al actualizar
-chrome.runtime.onInstalled.addListener(function (details) {
-    //Si se ha actualizado la extensión
-    if (details.reason === 'update') {
-        //v1.0.6
-        if (previousVersion === '1.0.5') {
-            var plantilla2 = {
-                lunes: 0, martes: 0, miercoles: 0, jueves: 0, viernes: 0
-            };
-            localStorage.setItem('ktablediscounttime', codifica(plantilla2));
-            localStorage.setItem('ktableretributiontime', codifica(plantilla2));
-        }
-    }
-});
+/*
+ chrome.runtime.onInstalled.addListener(function (details) {
+ //Si se ha actualizado la extensión
+ if (details.reason === 'update') {
+ //v1.0.6
+ if (previousVersion === '1.0.5') {
+ var plantilla2 = {
+ lunes: 0, martes: 0, miercoles: 0, jueves: 0, viernes: 0
+ };
+ localStorage.setItem('ktablediscounttime', codifica(plantilla2));
+ localStorage.setItem('ktableretributiontime', codifica(plantilla2));
+ }
+ }
+ });
+ */
