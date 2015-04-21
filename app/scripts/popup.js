@@ -248,13 +248,24 @@ function refreshTable() {
         objeto.text(aHoraMinuto(Math.abs(minutosRestantesRealesHoy)));
 
         //Lo hecho a lo largo de toda la semana
-        var minutosSemana = 0, minutosHoy = 0;
-        $('tbody .row-hecho td').each(function () {
-            minutosHoy = parseInt($(this).attr('data-minutos'));
+        var minutosSemana = 0, minutosHoy = 0,
+            diasNames = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
 
-            //Dependiendo de lo que esté en tiempo deseado hoy...
-            var hoyEs = $(this).attr('data-day');
-            var deseadoHoy = deseado[hoyEs];
+        diasNames.forEach(function (diaName) {
+            //Lo Deseado hoy
+            var deseadoHoy = deseado[diaName];
+
+            //Lo Hecho hoy
+            var hechoHoy = parseInt($('tr.row-hecho td[data-day="' + diaName + '"]').attr('data-minutos'));
+
+            //Lo Descontado hoy
+            var descontadoHoy = parseInt($('tr.row-descontar input[data-day="' + diaName + '"]').val());
+
+            //Lo Retribuido hoy
+            var retribuidoHoy = parseInt($('tr.row-retribuido input[data-day="' + diaName + '"]').val());
+
+            //Calculo
+            minutosHoy = hechoHoy + retribuidoHoy - descontadoHoy;
 
             //Si es jornada continua max 7 horas, partida 9
             if (deseadoHoy.jornadaContinua) {
@@ -265,12 +276,14 @@ function refreshTable() {
 
             minutosSemana += minutosHoy;
         });
+
+        //Sumo y resto a lo hecho en la semana los minutos retribuidos/descontados
         $('#weekTime').text(aHoraMinuto(minutosSemana));
 
         //Relanzo el material
         $.material.init();
 
-        minutosActualesHoy = minutosRestantesRealesHoy = ahora = objeto = null;
+        minutosActualesHoy = minutosRestantesRealesHoy = ahora = objeto = minutosHoy = minutosSemana = diasNames = null;
     }
 }
 
