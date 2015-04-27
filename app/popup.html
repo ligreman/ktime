@@ -184,7 +184,7 @@
             <tr class="row-retribuido success">
                 <th class="vertical">
                     <p data-toggle="tooltip" data-placement="right"
-                       title="Ausencias justificadas que no se han tenido en cuenta en el tiempo Hecho">Retribuido</p>
+                       title="Ausencias justificadas que no aparecen como retribuidas en el tiempo Hecho">Retribuido</p>
 
                     <p class="mini">No desayuno</p>
                 </th>
@@ -215,9 +215,7 @@
                 </td>
             </tr>
 
-            <tr class="row-hecho active top4" title="No cuenta el tiempo antes de las 8:00 ni después de las 21:00"
-                data-toggle="tooltip"
-                data-placement="top"></tr>
+            <tr class="row-hecho active top4"></tr>
             </tbody>
         </table>
 
@@ -232,6 +230,10 @@
 
             <p class="text-right lastUpdateTime col-sm-5">Última actualización: <span
                     id="actualizado"></span></p>
+
+            <p class="col-sm-1" id="ayuda" data-toggle="modal" data-target="#help-dialog" title="No me entero de nada, ¡ayúdame!">
+                <i class="mdi-action-help"></i>
+            </p>
         </div>
     </div>
 </div>
@@ -239,6 +241,75 @@
 <div id="kIFrame">
     <!-- http://srv-tornos/EVALOSNET/SuiteKiosko/Kiosco.htm-->
     <iframe id="iframe" src="" width="800px" height="500px" frameborder="0"></iframe>
+</div>
+
+
+<div id="help-dialog" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">¿Cómo funciona esto?</h4>
+            </div>
+            <div class="modal-body">
+                <div class="help-scroll">
+                    <p>Una vez configurada la aplicación, para que los datos del tiempo restante y hecho sean correctos, debes indicar el
+                        <span class="text-info">Tiempo deseado</span>
+                        que quieres hacer cada día. Indica también en el mismo sitio si cada día corresponde a jornada continua o partida.
+                    </p>
+
+                    <p><strong class="text-primary">kTime</strong> obtiene la información de fichajes del Kiosko y la procesa teniendo en cuenta lo siguiente:
+                    </p>
+                    <ul>
+                        <li>No se tiene en cuenta el tiempo hecho antes de las <strong>8:00</strong> ni después de las <strong>21:00</strong>.</li>
+                        <li><strong class="text-primary">kTime</strong> detecta ciertos fichajes especiales, siempre que existan los pares entrada-salida del
+                            fichaje *, y retribuye el tiempo transcurrido en dichos fichajes. El tiempo retribuido automáticamente se indica con iconos en la
+                            fila de tiempo Hecho. Los códigos detectados son:
+                            <ul>
+                                <li>Salud:
+                                    <ul>
+                                        <li><span class="text-primary negrita">002</span> - Ausencia por enfermedad</li>
+                                        <li><span class="text-primary negrita">003</span> - Asistencia a consulta médica</li>
+                                        <li><span class="text-primary negrita">014</span> - Asistencia a reconocimiento médico periódico</li>
+                                    </ul>
+                                </li>
+
+                                <li>Formación:
+                                    <ul>
+                                        <li><span class="text-primary negrita">001</span> - Asistencia a clases</li>
+                                        <li><span class="text-primary negrita">005</span> - Asistencia a exámenes</li>
+                                        <li><span class="text-primary negrita">006</span> - Realización de cursos incluidos en el plan de formación</li>
+                                        <li><span class="text-primary negrita">007</span> - Impartición de cursos del plan de formación</li>
+                                    </ul>
+                                </li>
+
+                                <li>Familia:
+                                    <ul>
+                                        <li><span class="text-primary negrita">011</span> - Permiso por lactancia</li>
+                                        <li><span class="text-primary negrita">012</span> - Permiso para exámenes prenatales</li>
+                                        <li><span class="text-primary negrita">013</span> - Permiso para cursos de preparación al parto</li>
+                                        <li><span class="text-primary negrita">015</span> - Urgencia familiar</li>
+                                    </ul>
+                                </li>
+
+                                <li>Otros:
+                                    <ul>
+                                        <li><span class="text-primary negrita">006</span> - Desayuno en jornada continua</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <p class="text-muted lastUpdateTime">* Si sólo existe un fichaje, por ejemplo salida a consulta médica y ya con eso termina la jornada, no
+                        se detecta ni se retribuye. En ese caso habrá que añadir esos minutos de forma manual en el campo Retribuido.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" data-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!--<div id="kConfig">-->

@@ -394,17 +394,28 @@ function marcajesToJSON(callback) {
         var minsHechos = (dia.minutosTotales === null) ? 0 : parseInt(dia.minutosTotales),
             minsRetribuidosDes = (dia.retribuidoDesayuno === null) ? 0 : parseInt(dia.retribuidoDesayuno),
             minsRetribuidosMedico = (dia.retribuidoMedico === null) ? 0 : parseInt(dia.retribuidoMedico),
-            htmlRetris = '', titleRetris = '';
+            minsRetribuidosFormacion = (dia.retribuidoFormacion === null) ? 0 : parseInt(dia.retribuidoFormacion),
+            minsRetribuidosFamilia = (dia.retribuidoFamilia === null) ? 0 : parseInt(dia.retribuidoFamilia),
+            htmlRetris = '';
+        //, titleRetris = '';
 
         if (minsRetribuidosDes > 0) {
-            titleRetris += 'Retribuido por desayuno: ' + minsRetribuidosDes + ' min';
+            //titleRetris += 'Retribuido por desayuno: ' + minsRetribuidosDes + ' min';
+            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
         }
         if (minsRetribuidosMedico > 0) {
-            titleRetris += '; Retribuido por médicos: ' + minsRetribuidosMedico + ' min';
+            //titleRetris += '; Retribuido por médicos: ' + minsRetribuidosMedico + ' min';
+            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por médicos: ' + minsRetribuidosMedico + ' min" data-toggle="tooltip"></i>';
         }
-        if (titleRetris !== '') {
-            htmlRetris += ' <i class="mdi-action-restore" title="' + titleRetris + '" data-toggle="tooltip"></i>';
+        if (minsRetribuidosFormacion > 0) {
+            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por formación: ' + minsRetribuidosFormacion + ' min" data-toggle="tooltip"></i>';
         }
+        if (minsRetribuidosFamilia > 0) {
+            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por familia: ' + minsRetribuidosFamilia + ' min" data-toggle="tooltip"></i>';
+        }
+        /*if (titleRetris !== '') {
+         htmlRetris += ' <i class="mdi-action-restore" title="' + titleRetris + '" data-toggle="tooltip"></i>';
+         }*/
 
         //Quito el tiempo que he hecho fuera de los horarios permitidos
         logger("antes: " + minutosAntes8);
@@ -416,7 +427,9 @@ function marcajesToJSON(callback) {
             dia: queDiaEs(index),
             minutos: minsHechos,
             retribuidoDesayuno: minsRetribuidosDes,
-            retribuidoMedico: minsRetribuidosMedico
+            retribuidoMedico: minsRetribuidosMedico,
+            retribuidoFormacion: minsRetribuidosFormacion,
+            retribuidoFamilia: minsRetribuidosFamilia
         });
     });
     sendProgreso(90, whoAsked);
@@ -460,7 +473,7 @@ function marcajesToJSON(callback) {
 
             //rowRestante += '<td class="form-group has-info padTop15"><input type="text" id="restanteReal" data-restante-ultimo-marcaje="' + minutosRestantesDesdeUltimoMarcajeHoy + '" data-ultimo-marcaje="' + minutosUltimoMarcaje + '" class="form-control text-center floating-label ' + style + '" placeholder="' + minus + aHoraMinuto(Math.abs(restante)) + '" value="" disabled="disabled"></td>';
 
-            rowRestante += '<td><span id="restanteReal" data-restante-ultimo-marcaje="' + minutosRestantesDesdeUltimoMarcajeHoy + '" data-ultimo-marcaje="' + minutosUltimoMarcaje + '" class="' + style + '" title="Desde el último marcaje de entrada: ' + minus + aHoraMinuto(Math.abs(restante)) + '"></span></td>';
+            rowRestante += '<td><span id="restanteReal" data-restante-ultimo-marcaje="' + minutosRestantesDesdeUltimoMarcajeHoy + '" data-ultimo-marcaje="' + minutosUltimoMarcaje + '" class="' + style + '" title="Contando desde el último marcaje de entrada quedarían: ' + minus + aHoraMinuto(Math.abs(restante)) + '"></span></td>';
         } else {
             rowRestante += '<td><span class="' + style + '">' + minus + aHoraMinuto(Math.abs(restante)) + '</span></td>';
         }
@@ -552,8 +565,12 @@ function getMarcajesInfo(datos) {
                 pendienteSalida: null,
                 retribuidoDesayuno: null,
                 retribuidoMedico: null,
+                retribuidoFormacion: null,
+                retribuidoFamilia: null,
                 code16: null,
                 codeMedico: null,
+                codeFormacion: null,
+                codeFamilia: null,
                 marcas: null,
                 ultimoMarcaje: null
             })
@@ -566,8 +583,12 @@ function getMarcajesInfo(datos) {
                 pendienteSalida: information.pendienteSalida,
                 retribuidoDesayuno: information.retribuidoDesayuno,
                 retribuidoMedico: information.retribuidoMedico,
+                retribuidoFormacion: information.retribuidoFormacion,
+                retribuidoFamilia: information.retribuidoFamilia,
                 code16: information.code16,
                 codeMedico: information.codeMedico,
+                codeFormacion: information.codeFormacion,
+                codeFamilia: information.codeFamilia,
                 marcas: information.marcas,
                 ultimoMarcaje: information.ultimoMarcaje
             });
@@ -609,9 +630,12 @@ function extractFichajes(row) {
 function processFichajes(fichajes) {
     var minutosHechos = 0, pendiente = null,
         tiempoRetribuidoDesayuno = 0, tiempoRetribuidoMedicos = 0,
+        tiempoRetribuidoFormacion = 0, tiempoRetribuidoFamilia = 0,
         entrada = null, salida = null, lastMarcaje = null,
         code016 = false, entrada016 = null, salida016 = null,
-        codeMedico = false, entradaMedico = null, salidaMedico = null;
+        codeMedico = false, entradaMedico = null, salidaMedico = null,
+        codeFormacion = false, entradaFormacion = null, salidaFormacion = null,
+        codeFamilia = false, entradaFamilia = null, salidaFamilia = null;
 
     //Sacar las horas hechas
     $.each(fichajes, function (index, value) {
@@ -622,6 +646,10 @@ function processFichajes(fichajes) {
                 entrada016 = value;
             } else if (value.code === '002' || value.code === '003' || value.code === '014') {
                 entradaMedico = value;
+            } else if (value.code === '001' || value.code === '005' || value.code === '006' || value.code === '007') {
+                entradaFormacion = value;
+            } else if (value.code === '011' || value.code === '012' || value.code === '013' || value.code === '015') {
+                entradaFamilia = value;
             }
         } else if (value.type === 'S' || value.type === 'i') {
             salida = value;
@@ -629,6 +657,10 @@ function processFichajes(fichajes) {
                 salida016 = value;
             } else if (value.code === '002' || value.code === '003' || value.code === '014') {
                 salidaMedico = value;
+            } else if (value.code === '001' || value.code === '005' || value.code === '006' || value.code === '007') {
+                salidaFormacion = value;
+            } else if (value.code === '011' || value.code === '012' || value.code === '013' || value.code === '015') {
+                salidaFamilia = value;
             }
         }
 
@@ -662,6 +694,22 @@ function processFichajes(fichajes) {
         tiempoRetribuidoMedicos = tiempoEntreMarcajes(entradaMedico, salidaMedico);
     }
 
+    //Codigos de formación
+    if (entradaFormacion !== null && salidaFormacion !== null) {
+        codeFormacion = true;
+
+        //Tiempo entre marcajes
+        tiempoRetribuidoFormacion = tiempoEntreMarcajes(entradaFormacion, salidaFormacion);
+    }
+
+    //Codigos de familia
+    if (entradaFamilia !== null && salidaFamilia !== null) {
+        codeFamilia = true;
+
+        //Tiempo entre marcajes
+        tiempoRetribuidoFamilia = tiempoEntreMarcajes(entradaFamilia, salidaFamilia);
+    }
+
     //Miro a ver si me quedó entrada!=null y salida=null
     //que quiere decir que estoy dentro aún
     if (entrada !== null && salida === null) {
@@ -675,7 +723,7 @@ function processFichajes(fichajes) {
     }
 
     //Añado el tiempo retribuido por cosas "raras"
-    minutosHechos += (tiempoRetribuidoDesayuno + tiempoRetribuidoMedicos);
+    minutosHechos += (tiempoRetribuidoDesayuno + tiempoRetribuidoMedicos + tiempoRetribuidoFormacion + tiempoRetribuidoFamilia);
 
     return {
         minutosTotales: minutosHechos,
@@ -684,8 +732,12 @@ function processFichajes(fichajes) {
         pendienteSalida: pendiente,
         retribuidoDesayuno: tiempoRetribuidoDesayuno,
         retribuidoMedico: tiempoRetribuidoMedicos,
+        retribuidoFormacion: tiempoRetribuidoFormacion,
+        retribuidoFamilia: tiempoRetribuidoFamilia,
         code16: code016,
         codeMedico: codeMedico,
+        codeFormacion: codeFormacion,
+        codeFamilia: codeFamilia,
         marcas: fichajes,
         ultimoMarcaje: lastMarcaje.time
     };
