@@ -252,3 +252,7 @@ th.mini {
     overflow-y: auto;
     max-height: 200px;
 }
+
+.traslucido {
+    opacity: 0.5;
+}
