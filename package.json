@@ -1,6 +1,6 @@
 {
     "name": "ktime",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "dependencies": {
         "jquery": "^2.1.3"
     },

@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('kAutoUpdateTime').addEventListener('click', configChange);
     document.getElementById('kNotifications').addEventListener('click', configChange);
     document.getElementById('kNotificationTime').addEventListener('click', configChange);
+    document.getElementById('ayuda').addEventListener('click', showAyuda);
 });
 
 var thisUser, thisPassword, iAm = 'login';
@@ -114,12 +115,15 @@ function checkConfigStatus(error) {
     //Muestro el mensaje según tenga o no ya la aplicación configurada
     if (error != undefined && error !== null) {
         $('#systemConfig').html(error).addClass('text-danger').removeClass('text-success').show();
+        $('#saveLogin').show();
         $('#logout').hide();
     } else if (localData === null || localData === '') {
         $('#systemConfig').html('<div class="alert alert-dismissable alert-danger"><i class="mdi-alert-error"></i> La aplicación no está configurada</div>').addClass('text-danger').removeClass('text-success').show();
+        $('#saveLogin').show();
         $('#logout').hide();
     } else {
         $('#systemConfig').html('Configuración correcta <i class="mdi-action-done"></i>').addClass('text-success').removeClass('text-danger').show();
+        $('#saveLogin').hide();
         $('#logout').show();
         $('#progress').hide();
 
@@ -158,6 +162,11 @@ var logOut = function (error) {
 
     checkConfigStatus(error);
 };
+
+//Panel de ayuda
+function showAyuda() {
+
+}
 
 //Actualiza el localStorage de la configuración cuando cambian los parámetros
 function configChange() {
