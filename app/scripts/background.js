@@ -368,15 +368,27 @@ function marcajesToJSON(callback) {
                 marcasDelDia += marca.time;
                 switch (marca.code) {
                     case '016':
-                        marcasDelDia += '<img class="mini" title="Código ' + marca.code + '" src="images/coffee.png" />';
+                        marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-maps-local-cafe traslucido"></i>';
                         break;
                     case '002':
                     case '003':
                     case '014':
-                        marcasDelDia += '<img class="mini" title="Código ' + marca.code + '" src="images/medico.png" />';
+                        marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-maps-local-hospital traslucido"></i>';
+                        break;
+                    case '001':
+                    case '005':
+                    case '006':
+                    case '007':
+                        marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-social-school traslucido"></i>';
+                        break;
+                    case '011':
+                    case '012':
+                    case '013':
+                    case '015':
+                        marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-action-home traslucido"></i>';
                         break;
                     default:
-                        marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-hardware-keyboard-control"></i>';
+                        marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-hardware-keyboard-control traslucido"></i>';
                 }
                 marcasDelDia += '</p>';
 
@@ -401,17 +413,17 @@ function marcajesToJSON(callback) {
 
         if (minsRetribuidosDes > 0) {
             //titleRetris += 'Retribuido por desayuno: ' + minsRetribuidosDes + ' min';
-            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
+            htmlRetris += ' <i class="mdi-maps-local-cafe traslucido" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
         }
         if (minsRetribuidosMedico > 0) {
             //titleRetris += '; Retribuido por médicos: ' + minsRetribuidosMedico + ' min';
-            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por médicos: ' + minsRetribuidosMedico + ' min" data-toggle="tooltip"></i>';
+            htmlRetris += ' <i class="mdi-maps-local-hospital traslucido" title="Retribuido por médicos: ' + minsRetribuidosMedico + ' min" data-toggle="tooltip"></i>';
         }
         if (minsRetribuidosFormacion > 0) {
-            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por formación: ' + minsRetribuidosFormacion + ' min" data-toggle="tooltip"></i>';
+            htmlRetris += ' <i class="mdi-social-school traslucido" title="Retribuido por formación: ' + minsRetribuidosFormacion + ' min" data-toggle="tooltip"></i>';
         }
         if (minsRetribuidosFamilia > 0) {
-            htmlRetris += ' <i class="mdi-action-restore" title="Retribuido por familia: ' + minsRetribuidosFamilia + ' min" data-toggle="tooltip"></i>';
+            htmlRetris += ' <i class="mdi-action-home traslucido" title="Retribuido por familia: ' + minsRetribuidosFamilia + ' min" data-toggle="tooltip"></i>';
         }
         /*if (titleRetris !== '') {
          htmlRetris += ' <i class="mdi-action-restore" title="' + titleRetris + '" data-toggle="tooltip"></i>';
