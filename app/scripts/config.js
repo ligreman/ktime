@@ -100,7 +100,7 @@ function checkConfigStatus(error) {
         localConfig = decodifica(localStorage.getItem('kconfig'));
 
     //Si no hay config local creo uno por defecto
-    if (localConfig === undefined || localConfig === null || localConfig === '') {
+    if (localConfig === undefined || localConfig === null || localConfig === '' || localConfig.notificationTime === undefined) {
         localConfig = {
             autoupdate: false,
             autoupdatetime: 60,
@@ -135,7 +135,7 @@ function checkConfigStatus(error) {
         document.getElementById('kAutoUpdate').checked = localConfig.autoupdate;
         document.getElementById('kAutoUpdateTime').value = localConfig.autoupdatetime;
         document.getElementById('kNotifications').checked = localConfig.notifications;
-        document.getElementById('kNotificationTime').value = localConfig.notificationTime;
+        document.getElementById('kNotificationTime').value = (!isNaN(localConfig.notificationTime)) ? localConfig.notificationTime : 5;
 
         logger(localData);
         logger(localConfig);
