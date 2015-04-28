@@ -387,6 +387,10 @@ function marcajesToJSON(callback) {
                     case '015':
                         marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-action-home traslucido"></i>';
                         break;
+                    case '008':
+                    case '009':
+                        marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-action-work traslucido"></i>';
+                        break;
                     default:
                         marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-hardware-keyboard-control traslucido"></i>';
                 }
@@ -408,6 +412,7 @@ function marcajesToJSON(callback) {
             minsRetribuidosMedico = (dia.retribuidoMedico === null) ? 0 : parseInt(dia.retribuidoMedico),
             minsRetribuidosFormacion = (dia.retribuidoFormacion === null) ? 0 : parseInt(dia.retribuidoFormacion),
             minsRetribuidosFamilia = (dia.retribuidoFamilia === null) ? 0 : parseInt(dia.retribuidoFamilia),
+            minsRetribuidosOtros = (dia.retribuidoOtros === null) ? 0 : parseInt(dia.retribuidoOtros),
             htmlRetris = '';
         //, titleRetris = '';
 
@@ -425,6 +430,9 @@ function marcajesToJSON(callback) {
         if (minsRetribuidosFamilia > 0) {
             htmlRetris += ' <i class="mdi-action-home traslucido" title="Retribuido por familia: ' + minsRetribuidosFamilia + ' min" data-toggle="tooltip"></i>';
         }
+        if (minsRetribuidosOtros > 0) {
+            htmlRetris += ' <i class="mdi-action-work traslucido" title="Retribuido por otras causas: ' + minsRetribuidosOtros + ' min" data-toggle="tooltip"></i>';
+        }
         /*if (titleRetris !== '') {
          htmlRetris += ' <i class="mdi-action-restore" title="' + titleRetris + '" data-toggle="tooltip"></i>';
          }*/
@@ -441,6 +449,7 @@ function marcajesToJSON(callback) {
             retribuidoDesayuno: minsRetribuidosDes,
             retribuidoMedico: minsRetribuidosMedico,
             retribuidoFormacion: minsRetribuidosFormacion,
+            retribuidoOtros: minsRetribuidosOtros,
             retribuidoFamilia: minsRetribuidosFamilia
         });
     });
@@ -564,7 +573,7 @@ function getMarcajesInfo(datos) {
     //Por cada día (fila)
     $.each(datos, function (index, value) {
         var information = extractFichajes(value.marcas);
-        //{minutosTotales: 0, minutos: 0, horas: 0, pendienteSalida: "08:06", code16: false}
+        //{minutosTotales: 0, minutos: 0, horas: 0, pendienteSalida: "08:06", codeDesayuno: false}
         logger('Datos de información de la fila extraída', 'info');
         logger(information);
 
@@ -579,10 +588,11 @@ function getMarcajesInfo(datos) {
                 retribuidoMedico: null,
                 retribuidoFormacion: null,
                 retribuidoFamilia: null,
-                code16: null,
+                codeDesayuno: null,
                 codeMedico: null,
                 codeFormacion: null,
                 codeFamilia: null,
+                codeOtros: null,
                 marcas: null,
                 ultimoMarcaje: null
             })
@@ -597,10 +607,11 @@ function getMarcajesInfo(datos) {
                 retribuidoMedico: information.retribuidoMedico,
                 retribuidoFormacion: information.retribuidoFormacion,
                 retribuidoFamilia: information.retribuidoFamilia,
-                code16: information.code16,
+                codeDesayuno: information.codeDesayuno,
                 codeMedico: information.codeMedico,
                 codeFormacion: information.codeFormacion,
                 codeFamilia: information.codeFamilia,
+                codeOtros: information.codeOtros,
                 marcas: information.marcas,
                 ultimoMarcaje: information.ultimoMarcaje
             });
@@ -643,10 +654,12 @@ function processFichajes(fichajes) {
     var minutosHechos = 0, pendiente = null,
         tiempoRetribuidoDesayuno = 0, tiempoRetribuidoMedicos = 0,
         tiempoRetribuidoFormacion = 0, tiempoRetribuidoFamilia = 0,
+        tiempoRetribuidoOtros = 0,
         entrada = null, salida = null, lastMarcaje = null,
-        code016 = false, entrada016 = null, salida016 = null,
+        codeDesayuno = false, entradaDesayuno = null, salidaDesayuno = null,
         codeMedico = false, entradaMedico = null, salidaMedico = null,
         codeFormacion = false, entradaFormacion = null, salidaFormacion = null,
+        codeOtros = false, entradaOtros = null, salidaOtros = null,
         codeFamilia = false, entradaFamilia = null, salidaFamilia = null;
 
     //Sacar las horas hechas
@@ -655,24 +668,28 @@ function processFichajes(fichajes) {
         if (value.type === 'E' || value.type === 'f') {
             entrada = value;
             if (value.code === '016') {
-                entrada016 = value;
+                entradaDesayuno = value;
             } else if (value.code === '002' || value.code === '003' || value.code === '014') {
                 entradaMedico = value;
             } else if (value.code === '001' || value.code === '005' || value.code === '006' || value.code === '007') {
                 entradaFormacion = value;
             } else if (value.code === '011' || value.code === '012' || value.code === '013' || value.code === '015') {
                 entradaFamilia = value;
+            } else if (value.code === '008' || value.code === '009') {
+                entradaOtros = value;
             }
         } else if (value.type === 'S' || value.type === 'i') {
             salida = value;
             if (value.code === '016') {
-                salida016 = value;
+                salidaDesayuno = value;
             } else if (value.code === '002' || value.code === '003' || value.code === '014') {
                 salidaMedico = value;
             } else if (value.code === '001' || value.code === '005' || value.code === '006' || value.code === '007') {
                 salidaFormacion = value;
             } else if (value.code === '011' || value.code === '012' || value.code === '013' || value.code === '015') {
                 salidaFamilia = value;
+            } else if (value.code === '008' || value.code === '009') {
+                salidaOtros = value;
             }
         }
 
@@ -689,11 +706,11 @@ function processFichajes(fichajes) {
     });
 
     //Compruebo si el código de desayuno está presente
-    if (entrada016 !== null && salida016 !== null) {
-        code016 = true;
+    if (entradaDesayuno !== null && salidaDesayuno !== null) {
+        codeDesayuno = true;
 
         //Calculo el tiempo entre estos dos marcajes
-        var minDesayunos = tiempoEntreMarcajes(entrada016, salida016);
+        var minDesayunos = tiempoEntreMarcajes(entradaDesayuno, salidaDesayuno);
         //El máximo retribuido por desayuno son 15 minutos
         tiempoRetribuidoDesayuno = Math.min(minDesayunos, 15);
     }
@@ -722,6 +739,14 @@ function processFichajes(fichajes) {
         tiempoRetribuidoFamilia = tiempoEntreMarcajes(entradaFamilia, salidaFamilia);
     }
 
+    //Codigos de otros
+    if (entradaOtros !== null && salidaOtros !== null) {
+        codeOtros = true;
+
+        //Tiempo entre marcajes
+        tiempoRetribuidoOtros = tiempoEntreMarcajes(entradaOtros, salidaOtros);
+    }
+
     //Miro a ver si me quedó entrada!=null y salida=null
     //que quiere decir que estoy dentro aún
     if (entrada !== null && salida === null) {
@@ -735,7 +760,7 @@ function processFichajes(fichajes) {
     }
 
     //Añado el tiempo retribuido por cosas "raras"
-    minutosHechos += (tiempoRetribuidoDesayuno + tiempoRetribuidoMedicos + tiempoRetribuidoFormacion + tiempoRetribuidoFamilia);
+    minutosHechos += (tiempoRetribuidoDesayuno + tiempoRetribuidoMedicos + tiempoRetribuidoFormacion + tiempoRetribuidoFamilia + tiempoRetribuidoOtros);
 
     return {
         minutosTotales: minutosHechos,
@@ -746,10 +771,12 @@ function processFichajes(fichajes) {
         retribuidoMedico: tiempoRetribuidoMedicos,
         retribuidoFormacion: tiempoRetribuidoFormacion,
         retribuidoFamilia: tiempoRetribuidoFamilia,
-        code16: code016,
+        retribuidoOtros: tiempoRetribuidoOtros,
+        codeDesayuno: codeDesayuno,
         codeMedico: codeMedico,
         codeFormacion: codeFormacion,
         codeFamilia: codeFamilia,
+        codeOtros: codeOtros,
         marcas: fichajes,
         ultimoMarcaje: lastMarcaje.time
     };
