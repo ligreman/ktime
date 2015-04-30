@@ -137,14 +137,7 @@
             </thead>
 
             <tfoot>
-            <tr class="row-restante active">
-                <!--<th>Restante</th>-->
-                <!--<td data-day="lunes"></td>-->
-                <!--<td data-day="martes"></td>-->
-                <!--<td data-day="miercoles"></td>-->
-                <!--<td data-day="jueves"></td>-->
-                <!--<td data-day="viernes"></td>-->
-            </tr>
+            <tr class="row-restante active"></tr>
             </tfoot>
 
             <tbody>
@@ -256,13 +249,20 @@
                         que quieres hacer cada día. Indica también en el mismo sitio si cada día corresponde a jornada continua o partida.
                     </p>
 
+                    <p>Los campos <strong class="text-danger">Descontado</strong> y <strong class="text-success">Retribuido</strong> se utilizan para indicar
+                        tiempos que no se gestionan automáticamente. Por ejemplo, si vas a inglés has de descontar los minutos de la clase. O si hay algún
+                        tiempo que se ha retribuido por alguna razón y no se cuenta de forma automática, puedes indicarlo como tiempo retribuido.</p>
+
+                    <p>El tiempo retribuido <strong>automáticamente</strong> se indica con iconos en la fila de tiempo Hecho.
+                    </p>
+
                     <p><strong class="text-primary">kTime</strong> obtiene la información de fichajes del Kiosko y la procesa teniendo en cuenta lo siguiente:
                     </p>
+
                     <ul>
                         <li>No se tiene en cuenta el tiempo hecho antes de las <strong>8:00</strong> ni después de las <strong>21:00</strong>.</li>
                         <li><strong class="text-primary">kTime</strong> detecta ciertos fichajes especiales, siempre que existan los pares entrada-salida del
-                            fichaje *, y retribuye el tiempo transcurrido en dichos fichajes. El tiempo retribuido automáticamente se indica con iconos en la
-                            fila de tiempo Hecho. Los códigos detectados son:
+                            fichaje *, y retribuye el tiempo transcurrido en dichos fichajes. Los códigos detectados en pares entrada-salida son:
                             <ul>
                                 <li>Salud:
                                     <ul>
@@ -306,7 +306,7 @@
                         </li>
                     </ul>
 
-                    <p class="text-muted lastUpdateTime">* Si sólo existe un fichaje, por ejemplo salida a consulta médica y ya con eso termina la jornada, no
+                    <p class="text-muted lastUpdateTime">* Si sólo existe un fichaje, por ejemplo salida a consulta médica, y ya con eso termina la jornada, no
                         se detecta ni se retribuye. En ese caso habrá que añadir esos minutos de forma manual en el campo Retribuido.</p>
                 </div>
             </div>
@@ -316,11 +316,6 @@
         </div>
     </div>
 </div>
-
-<!--<div id="kConfig">-->
-<!--<iframe id="iframeConfig" src="" width="800px" height="500px"-->
-<!--frameborder="0"></iframe>-->
-<!--</div>-->
 
 <!-- build:js scripts/vendor.js -->
 <script src="scripts/utils.js"></script>
