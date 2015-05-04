@@ -419,6 +419,7 @@ function marcajesToJSON(callback) {
 
         var minsHechos = (dia.minutosTotales === null) ? 0 : parseInt(dia.minutosTotales),
             minsRetribuidosDes = (dia.retribuidoDesayuno === null) ? 0 : parseInt(dia.retribuidoDesayuno),
+            minsRetribuidosComida = (dia.retribuidoComida === null) ? 0 : parseInt(dia.retribuidoComida),
             minsRetribuidosMedico = (dia.retribuidoMedico === null) ? 0 : parseInt(dia.retribuidoMedico),
             minsRetribuidosFormacion = (dia.retribuidoFormacion === null) ? 0 : parseInt(dia.retribuidoFormacion),
             minsRetribuidosFamilia = (dia.retribuidoFamilia === null) ? 0 : parseInt(dia.retribuidoFamilia),
@@ -429,6 +430,10 @@ function marcajesToJSON(callback) {
         if (minsRetribuidosDes > 0) {
             //titleRetris += 'Retribuido por desayuno: ' + minsRetribuidosDes + ' min';
             htmlRetris += ' <i class="mdi-maps-local-cafe traslucido" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
+        }
+        if (minsRetribuidosComida > 0) {
+            //titleRetris += 'Retribuido por comida: ' + minsRetribuidosDes + ' min';
+            htmlRetris += ' <i class="mdi-maps-local-restaurant traslucido" title="Retribuido por comida: ' + minsRetribuidosComida + ' min" data-toggle="tooltip"></i>';
         }
         if (minsRetribuidosMedico > 0) {
             //titleRetris += '; Retribuido por médicos: ' + minsRetribuidosMedico + ' min';
@@ -457,6 +462,7 @@ function marcajesToJSON(callback) {
             dia: queDiaEs(index),
             minutos: minsHechos,
             retribuidoDesayuno: minsRetribuidosDes,
+            retribuidoComida: minsRetribuidosComida,
             retribuidoMedico: minsRetribuidosMedico,
             retribuidoFormacion: minsRetribuidosFormacion,
             retribuidoOtros: minsRetribuidosOtros,
@@ -599,10 +605,12 @@ function getMarcajesInfo(datos) {
                 horas: null,
                 pendienteSalida: null,
                 retribuidoDesayuno: null,
+                retribuidoComida: null,
                 retribuidoMedico: null,
                 retribuidoFormacion: null,
                 retribuidoFamilia: null,
                 codeDesayuno: null,
+                codeComida: null,
                 codeMedico: null,
                 codeFormacion: null,
                 codeFamilia: null,
@@ -618,10 +626,12 @@ function getMarcajesInfo(datos) {
                 horas: information.horas,
                 pendienteSalida: information.pendienteSalida,
                 retribuidoDesayuno: information.retribuidoDesayuno,
+                retribuidoComida: information.retribuidoComida,
                 retribuidoMedico: information.retribuidoMedico,
                 retribuidoFormacion: information.retribuidoFormacion,
                 retribuidoFamilia: information.retribuidoFamilia,
                 codeDesayuno: information.codeDesayuno,
+                codeComida: information.codeComida,
                 codeMedico: information.codeMedico,
                 codeFormacion: information.codeFormacion,
                 codeFamilia: information.codeFamilia,
@@ -668,9 +678,10 @@ function processFichajes(fichajes) {
     var minutosHechos = 0, pendiente = null,
         tiempoRetribuidoDesayuno = 0, tiempoRetribuidoMedicos = 0,
         tiempoRetribuidoFormacion = 0, tiempoRetribuidoFamilia = 0,
-        tiempoRetribuidoOtros = 0,
+        tiempoRetribuidoOtros = 0, tiempoRetribuidoComida = 0,
         entrada = null, salida = null, lastMarcaje = null,
         codeDesayuno = false, entradaDesayuno = null, salidaDesayuno = null,
+        codeComida = false, entradaComida = null, salidaComida = null,
         codeMedico = false, entradaMedico = null, salidaMedico = null,
         codeFormacion = false, entradaFormacion = null, salidaFormacion = null,
         codeOtros = false, entradaOtros = null, salidaOtros = null,
@@ -683,6 +694,8 @@ function processFichajes(fichajes) {
             entrada = value;
             if (value.code === '016') {
                 entradaDesayuno = value;
+            } else if (value.code === '022') {
+                entradaComida = value;
             } else if (value.code === '002' || value.code === '003' || value.code === '014') {
                 entradaMedico = value;
             } else if (value.code === '001' || value.code === '005' || value.code === '006' || value.code === '007') {
@@ -696,6 +709,8 @@ function processFichajes(fichajes) {
             salida = value;
             if (value.code === '016') {
                 salidaDesayuno = value;
+            } else if (value.code === '022') {
+                salidaComida = value;
             } else if (value.code === '002' || value.code === '003' || value.code === '014') {
                 salidaMedico = value;
             } else if (value.code === '001' || value.code === '005' || value.code === '006' || value.code === '007') {
@@ -727,6 +742,16 @@ function processFichajes(fichajes) {
         var minDesayunos = tiempoEntreMarcajes(entradaDesayuno, salidaDesayuno);
         //El máximo retribuido por desayuno son 15 minutos
         tiempoRetribuidoDesayuno = Math.min(minDesayunos, 15);
+    }
+
+    //Compruebo si el código de comida está presente
+    if (entradaComida !== null && salidaComida !== null) {
+        codeComida = true;
+
+        //Calculo el tiempo entre estos dos marcajes
+        var minComidas = tiempoEntreMarcajes(entradaComida, salidaComida);
+        //El máximo retribuido por comida son 30 minutos
+        tiempoRetribuidoComida = Math.min(minComidas, 30);
     }
 
     //Codigos de médico
@@ -774,7 +799,7 @@ function processFichajes(fichajes) {
     }
 
     //Añado el tiempo retribuido por cosas "raras"
-    minutosHechos += (tiempoRetribuidoDesayuno + tiempoRetribuidoMedicos + tiempoRetribuidoFormacion + tiempoRetribuidoFamilia + tiempoRetribuidoOtros);
+    minutosHechos += (tiempoRetribuidoDesayuno + tiempoRetribuidoComida + tiempoRetribuidoMedicos + tiempoRetribuidoFormacion + tiempoRetribuidoFamilia + tiempoRetribuidoOtros);
 
     return {
         minutosTotales: minutosHechos,
@@ -782,11 +807,13 @@ function processFichajes(fichajes) {
         horas: parseInt(minutosHechos / 60), //parte entera, las horas
         pendienteSalida: pendiente,
         retribuidoDesayuno: tiempoRetribuidoDesayuno,
+        retribuidoComida: tiempoRetribuidoComida,
         retribuidoMedico: tiempoRetribuidoMedicos,
         retribuidoFormacion: tiempoRetribuidoFormacion,
         retribuidoFamilia: tiempoRetribuidoFamilia,
         retribuidoOtros: tiempoRetribuidoOtros,
         codeDesayuno: codeDesayuno,
+        codeComida: codeComida,
         codeMedico: codeMedico,
         codeFormacion: codeFormacion,
         codeFamilia: codeFamilia,
