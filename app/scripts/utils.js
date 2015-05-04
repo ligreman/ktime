@@ -126,3 +126,18 @@ function logger(msg, type) {
     }
 
 }
+
+function esVerano() {
+    var fecha = new Date();
+    var day = fecha.getDate(), //1-31
+        month = fecha.getMonth() + 1; //1-12
+
+    //Miro si está entre el 15 de Junio y 15 Septiembre
+    if (month === 7 || month === 8) {
+        return true;
+    } else if ((month === 6 && day >= 15) || (month === 9 && day <= 15)) {
+        return true;
+    } else {
+        return false;
+    }
+}

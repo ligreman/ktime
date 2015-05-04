@@ -336,7 +336,9 @@ function marcajesToJSON(callback) {
         rowMarcas = '<th>Marcajes</th>',
         rowHecho = '<th>Hecho</th>',
         rowRestante = '<th>Restante</th>',
-        horaSalida, dataHechos = [], hoyEs = new Date(), ultimoMarcajeDelDia = '';
+        horaSalida, dataHechos = [], hoyEs = new Date(), ultimoMarcajeDelDia = '',
+        limiteAntes = {invierno: 480, verano: 450},
+        limiteDespues = {invierno: 1260, verano: 990};
 
     var numHoyEs = hoyEs.getDay() - 1; //Lo convierto a mi forma de contar días
 
@@ -396,12 +398,20 @@ function marcajesToJSON(callback) {
                 }
                 marcasDelDia += '</p>';
 
-                //Miro a ver si entré antes de las 8 o salí después de las 21
-                if (aMinutos(marca.time) < 480) {
-                    minutosAntes8 = 480 - aMinutos(marca.time);
+                //Miro a ver si entré y salí dentro de los límites
+                var limAntes = limiteAntes.invierno,
+                    limDespues = limDespues.invierno;
+
+                if (esVerano()) {
+                    limAntes = limiteAntes.verano;
+                    limDespues = limiteDespues.verano;
                 }
-                if (aMinutos(marca.time) > 1260) {
-                    minutosDespues9 = aMinutos(marca.time) - 1260;
+
+                if (aMinutos(marca.time) < limAntes) {
+                    minutosAntes8 = limAntes - aMinutos(marca.time);
+                }
+                if (aMinutos(marca.time) > limDespues) {
+                    minutosDespues9 = aMinutos(marca.time) - limDespues;
                 }
             });
             rowMarcas += '<td>' + marcasDelDia + '</td>';
@@ -514,7 +524,11 @@ function marcajesToJSON(callback) {
             //Cambio 1 por eles que cabe en la badge
             var horaSalidaBadge = horaSalida.replace(/[1]{1}/g, 'l');
             chrome.browserAction.setBadgeText({text: horaSalidaBadge});
-            chrome.browserAction.setBadgeBackgroundColor({color: '#111111'});
+            if (esVerano()) {
+                chrome.browserAction.setBadgeBackgroundColor({color: '#F47032'})
+            } else {
+                chrome.browserAction.setBadgeBackgroundColor({color: '#111111'});
+            }
 
             //Alarma de hora de salida y la de 5 minutos antes
             var trozos = horaSalida.split(':'),

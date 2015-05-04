@@ -145,7 +145,8 @@
 
             <tr class="row-descontar danger top4">
                 <th class="vertical">
-                    <p data-toggle="tooltip" data-placement="right" title="Inglés, comida...">Descontado</p>
+                    <p data-toggle="tooltip" data-placement="right" title="Inglés, comida..."><i class="mdi-action-info-outline ayuda"></i>Descontado
+                    </p>
                 </th>
                 <td class="form-group has-warning">
                     <input data-day="lunes" type="number"
@@ -177,7 +178,8 @@
             <tr class="row-retribuido success">
                 <th class="vertical">
                     <p data-toggle="tooltip" data-placement="right"
-                       title="Ausencias justificadas que no aparecen como retribuidas en el tiempo Hecho">Retribuido</p>
+                       title="Ausencias justificadas que no aparecen como retribuidas en el tiempo Hecho"><i class="mdi-action-info-outline ayuda"></i>Retribuido
+                    </p>
                 </th>
                 <td>
                     <input data-day="lunes" type="number"
@@ -213,7 +215,7 @@
         <div class="row">
             <p class="col-sm-1"></p>
 
-            <p class="col-sm-4 lastUpdateTime text-info" data-toggle="tooltip" title="Tiempo hasta el último marcaje de entrada de la semana">
+            <p class="col-sm-4 lastUpdateTime text-info" id="estaWeek" data-toggle="tooltip" title="Tiempo hasta el último marcaje de entrada de la semana">
                 Tiempo hecho esta semana <span id="weekTime"></span>
             </p>
 
@@ -260,7 +262,9 @@
                     </p>
 
                     <ul>
-                        <li>No se tiene en cuenta el tiempo hecho antes de las <strong>8:00</strong> ni después de las <strong>21:00</strong>.</li>
+                        <li>No se tiene en cuenta el tiempo hecho antes de las <strong>8:00</strong> ni después de las <strong>21:00</strong> en horario normal.
+                            En horario de verano es de <strong>7:30</strong> a <strong>16:30</strong> (entre el 15 de Junio y 15 de Septiembre)
+                        </li>
                         <li><strong class="text-primary">kTime</strong> detecta ciertos fichajes especiales, siempre que existan los pares entrada-salida del
                             fichaje *, y retribuye el tiempo transcurrido en dichos fichajes. Los códigos detectados en pares entrada-salida son:
                             <ul>
