@@ -129,6 +129,21 @@ $(document).ready(function () {
         }
     });
 
+    //Compruebo si es verano, para cambiar estilos
+    if (esVerano()) {
+        //Logo kTime
+        var logo = $('span.navbar-brand');
+        logo.append('<span class="veranito">Veranito</span>');
+        logo.find('i').removeClass().addClass('mdi-image-wb-sunny');
+
+        $('nav.navbar').addClass('navbar-material-amber-700');
+        $('#desiredTableButton').removeClass('btn-info').addClass('btn-material-amber-400');
+        var trConfig = $('#marcajes-data').find('tr.config');
+        trConfig.removeClass('info').addClass('btn-material-amber-100');
+        trConfig.find('th.has-info').removeClass('has-info').addClass('has-warning');
+        $('#estaWeek').removeClass('text-info').addClass('text-warning');
+    }
+
     checkStatus();
 });
 
