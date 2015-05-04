@@ -259,8 +259,18 @@ function refreshTable() {
 
         var minutosActualesHoy = aMinutos(ahora.getHours() + ':' + ahora.getMinutes());
         var minutosRestantesRealesHoy = restanteDesdeUltimoMarcaje - (minutosActualesHoy - minutosUltimoMarcaje);
-        //objeto.val(aHoraMinuto(Math.abs(minutosRestantesRealesHoy)));
-        objeto.text(aHoraMinuto(Math.abs(minutosRestantesRealesHoy)));
+        logger('Restante real: ' + minutosRestantesRealesHoy);
+        logger('Restante desde ultimo marcaje: ' + restanteDesdeUltimoMarcaje);
+        logger('Minutos actuales: ' + minutosActualesHoy);
+        logger('Minutos ultimo marcaje: ' + minutosUltimoMarcaje);
+
+        var textoReal = '';
+        if (minutosRestantesRealesHoy <= 0) {
+            textoReal += '- ';
+            objeto.addClass('verde');
+        }
+
+        objeto.text(textoReal + aHoraMinuto(Math.abs(minutosRestantesRealesHoy)));
 
         //Lo hecho a lo largo de toda la semana
         var minutosSemana = 0, minutosHoy = 0,
