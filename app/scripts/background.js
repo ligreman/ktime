@@ -400,7 +400,7 @@ function marcajesToJSON(callback) {
 
                 //Miro a ver si entré y salí dentro de los límites
                 var limAntes = limiteAntes.invierno,
-                    limDespues = limDespues.invierno;
+                    limDespues = limiteDespues.invierno;
 
                 if (esVerano()) {
                     limAntes = limiteAntes.verano;
