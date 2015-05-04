@@ -105,7 +105,7 @@ function checkConfigStatus(error) {
             autoupdate: false,
             autoupdatetime: 60,
             notifications: true,
-            notitifactionTime: 5
+            notificationTime: 5
         };
         localStorage.setItem('kconfig', codifica(localConfig));
     }
