@@ -393,6 +393,9 @@ function marcajesToJSON(callback) {
                     case '009':
                         marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-action-work traslucido"></i>';
                         break;
+                    case '022':
+                        marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-maps-local-restaurant traslucido"></i>';
+                        break;
                     default:
                         marcasDelDia += '<i title="Código ' + marca.code + '" class="mdi-hardware-keyboard-control traslucido"></i>';
                 }
@@ -419,7 +422,7 @@ function marcajesToJSON(callback) {
 
         var minsHechos = (dia.minutosTotales === null) ? 0 : parseInt(dia.minutosTotales),
             minsRetribuidosDes = (dia.retribuidoDesayuno === null) ? 0 : parseInt(dia.retribuidoDesayuno),
-            minsRetribuidosComida = (dia.retribuidoComida === null) ? 0 : parseInt(dia.retribuidoComida),
+            minsDescontadosComida = (dia.descontadoComida === null) ? 0 : parseInt(dia.descontadoComida),
             minsRetribuidosMedico = (dia.retribuidoMedico === null) ? 0 : parseInt(dia.retribuidoMedico),
             minsRetribuidosFormacion = (dia.retribuidoFormacion === null) ? 0 : parseInt(dia.retribuidoFormacion),
             minsRetribuidosFamilia = (dia.retribuidoFamilia === null) ? 0 : parseInt(dia.retribuidoFamilia),
@@ -431,9 +434,8 @@ function marcajesToJSON(callback) {
             //titleRetris += 'Retribuido por desayuno: ' + minsRetribuidosDes + ' min';
             htmlRetris += ' <i class="mdi-maps-local-cafe traslucido" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
         }
-        if (minsRetribuidosComida > 0) {
-            //titleRetris += 'Retribuido por comida: ' + minsRetribuidosDes + ' min';
-            htmlRetris += ' <i class="mdi-maps-local-restaurant traslucido" title="Retribuido por comida: ' + minsRetribuidosComida + ' min" data-toggle="tooltip"></i>';
+        if (minsDescontadosComida > 0) {
+            htmlRetris += ' <i class="mdi-maps-local-restaurant traslucido" title="Descontado por comida: ' + minsDescontadosComida + ' min  (por no llegar al mínimo de 30min)" data-toggle="tooltip"></i>';
         }
         if (minsRetribuidosMedico > 0) {
             //titleRetris += '; Retribuido por médicos: ' + minsRetribuidosMedico + ' min';
@@ -462,7 +464,7 @@ function marcajesToJSON(callback) {
             dia: queDiaEs(index),
             minutos: minsHechos,
             retribuidoDesayuno: minsRetribuidosDes,
-            retribuidoComida: minsRetribuidosComida,
+            descontadoComida: minsDescontadosComida,
             retribuidoMedico: minsRetribuidosMedico,
             retribuidoFormacion: minsRetribuidosFormacion,
             retribuidoOtros: minsRetribuidosOtros,
@@ -605,7 +607,7 @@ function getMarcajesInfo(datos) {
                 horas: null,
                 pendienteSalida: null,
                 retribuidoDesayuno: null,
-                retribuidoComida: null,
+                descontadoComida: null,
                 retribuidoMedico: null,
                 retribuidoFormacion: null,
                 retribuidoFamilia: null,
@@ -626,7 +628,7 @@ function getMarcajesInfo(datos) {
                 horas: information.horas,
                 pendienteSalida: information.pendienteSalida,
                 retribuidoDesayuno: information.retribuidoDesayuno,
-                retribuidoComida: information.retribuidoComida,
+                descontadoComida: information.descontadoComida,
                 retribuidoMedico: information.retribuidoMedico,
                 retribuidoFormacion: information.retribuidoFormacion,
                 retribuidoFamilia: information.retribuidoFamilia,
@@ -678,7 +680,7 @@ function processFichajes(fichajes) {
     var minutosHechos = 0, pendiente = null,
         tiempoRetribuidoDesayuno = 0, tiempoRetribuidoMedicos = 0,
         tiempoRetribuidoFormacion = 0, tiempoRetribuidoFamilia = 0,
-        tiempoRetribuidoOtros = 0, tiempoRetribuidoComida = 0,
+        tiempoRetribuidoOtros = 0, tiempoDescontadoComida = 0,
         entrada = null, salida = null, lastMarcaje = null,
         codeDesayuno = false, entradaDesayuno = null, salidaDesayuno = null,
         codeComida = false, entradaComida = null, salidaComida = null,
@@ -749,9 +751,14 @@ function processFichajes(fichajes) {
         codeComida = true;
 
         //Calculo el tiempo entre estos dos marcajes
-        var minComidas = tiempoEntreMarcajes(entradaComida, salidaComida);
-        //El máximo retribuido por comida son 30 minutos
-        tiempoRetribuidoComida = Math.min(minComidas, 30);
+        var minsComida = tiempoEntreMarcajes(entradaComida, salidaComida);
+
+        //El mínimo entre marcajes por comida son 30 minutos, así que si he hecho menos me lo descontarán
+        var diferencia = 30 - minsComida;
+        //Si la diferencia es positiva es que he estado menos tiempo comiendo, pierdo unos minutos que me descontarán
+        if (diferencia > 0) {
+            tiempoDescontadoComida = diferencia;
+        }
     }
 
     //Codigos de médico
@@ -799,15 +806,15 @@ function processFichajes(fichajes) {
     }
 
     //Añado el tiempo retribuido por cosas "raras"
-    minutosHechos += (tiempoRetribuidoDesayuno + tiempoRetribuidoComida + tiempoRetribuidoMedicos + tiempoRetribuidoFormacion + tiempoRetribuidoFamilia + tiempoRetribuidoOtros);
+    minutosHechos += (tiempoRetribuidoDesayuno + tiempoRetribuidoMedicos + tiempoRetribuidoFormacion + tiempoRetribuidoFamilia + tiempoRetribuidoOtros) - (tiempoDescontadoComida);
 
     return {
         minutosTotales: minutosHechos,
         minutos: minutosHechos % 60, //resto de la division min/60
         horas: parseInt(minutosHechos / 60), //parte entera, las horas
         pendienteSalida: pendiente,
+        descontadoComida: tiempoDescontadoComida,
         retribuidoDesayuno: tiempoRetribuidoDesayuno,
-        retribuidoComida: tiempoRetribuidoComida,
         retribuidoMedico: tiempoRetribuidoMedicos,
         retribuidoFormacion: tiempoRetribuidoFormacion,
         retribuidoFamilia: tiempoRetribuidoFamilia,
