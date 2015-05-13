@@ -35,13 +35,14 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
                 });
                 break;
             case 'readyCasi':
-                notifica('Sólo unos minutos más', 'Ya queda poquito...', 'images/icon-128.png');
+                chrome.browserAction.setBadgeBackgroundColor({color: '#AFA53B'});
+                notifica('Sólo unos minutos más', 'Ya te queda poquito... ¡ánimo!', 'images/icon-128.png');
                 break;
             case 'readyToGo':
                 chrome.browserAction.setBadgeText({text: '¡Go!'});
                 chrome.browserAction.setBadgeBackgroundColor({color: '#5DA715'});
                 //Notificaciones
-                notifica('Ale, pa casa', '¡Ya has cumplido con tu horario de hoy!', 'images/icon-128.png');
+                //notifica('Ale, pa casa', '¡Ya has cumplido con tu horario de hoy!', 'images/icon-128.png');
                 break;
         }
     }
@@ -351,7 +352,7 @@ function marcajesToJSON(callback) {
             ultimoMarcajeDelDia = dia.ultimoMarcaje;
         }
 
-        var minutosAntes8 = 0, minutosDespues9 = 0;
+        var minutosAntes = 0, minutosDespues = 0;
 
         //Si los datos son null pondré celdas en blanco
         if (dia.marcas === null) {
@@ -411,10 +412,10 @@ function marcajesToJSON(callback) {
                 }
 
                 if (aMinutos(marca.time) < limAntes) {
-                    minutosAntes8 = limAntes - aMinutos(marca.time);
+                    minutosAntes = limAntes - aMinutos(marca.time);
                 }
                 if (aMinutos(marca.time) > limDespues) {
-                    minutosDespues9 = aMinutos(marca.time) - limDespues;
+                    minutosDespues = aMinutos(marca.time) - limDespues;
                 }
             });
             rowMarcas += '<td>' + marcasDelDia + '</td>';
@@ -428,17 +429,14 @@ function marcajesToJSON(callback) {
             minsRetribuidosFamilia = (dia.retribuidoFamilia === null) ? 0 : parseInt(dia.retribuidoFamilia),
             minsRetribuidosOtros = (dia.retribuidoOtros === null) ? 0 : parseInt(dia.retribuidoOtros),
             htmlRetris = '';
-        //, titleRetris = '';
 
         if (minsRetribuidosDes > 0) {
-            //titleRetris += 'Retribuido por desayuno: ' + minsRetribuidosDes + ' min';
             htmlRetris += ' <i class="mdi-maps-local-cafe traslucido" title="Retribuido por desayuno: ' + minsRetribuidosDes + ' min" data-toggle="tooltip"></i>';
         }
         if (minsDescontadosComida > 0) {
             htmlRetris += ' <i class="mdi-maps-local-restaurant traslucido" title="Descontado por comida: ' + minsDescontadosComida + ' min  (por no llegar al mínimo de 30min)" data-toggle="tooltip"></i>';
         }
         if (minsRetribuidosMedico > 0) {
-            //titleRetris += '; Retribuido por médicos: ' + minsRetribuidosMedico + ' min';
             htmlRetris += ' <i class="mdi-maps-local-hospital traslucido" title="Retribuido por médicos: ' + minsRetribuidosMedico + ' min" data-toggle="tooltip"></i>';
         }
         if (minsRetribuidosFormacion > 0) {
@@ -450,16 +448,21 @@ function marcajesToJSON(callback) {
         if (minsRetribuidosOtros > 0) {
             htmlRetris += ' <i class="mdi-action-work traslucido" title="Retribuido por otras causas: ' + minsRetribuidosOtros + ' min" data-toggle="tooltip"></i>';
         }
-        /*if (titleRetris !== '') {
-         htmlRetris += ' <i class="mdi-action-restore" title="' + titleRetris + '" data-toggle="tooltip"></i>';
-         }*/
 
         //Quito el tiempo que he hecho fuera de los horarios permitidos
-        logger("antes: " + minutosAntes8);
-        logger("despues: " + minutosDespues9);
-        minsHechos = minsHechos - minutosAntes8 - minutosDespues9;
+        logger("antes: " + minutosAntes);
+        logger("despues: " + minutosDespues);
+        minsHechos = minsHechos - minutosAntes - minutosDespues;
 
-        rowHecho += '<td data-day="' + queDiaEs(index) + '" data-minutos="' + minsHechos + '">' + formatTime(dia.horas) + ':' + formatTime(dia.minutos) + htmlRetris + '</td>';
+        //Si he hecho tiempo fuera de horario pongo iconito
+        if (minutosAntes > 0 || minutosDespues > 0) {
+            htmlRetris += ' <i class="mdi-action-alarm-off" title="Tiempo hecho fuera de horario: ' + (minutosAntes + minutosDespues) + ' min" data-toggle="tooltip"></i>';
+        }
+
+        logger('Minutos hechos: ' + minsHechos);
+
+        //Por si me ha quedado negativo minsHechos, pongo 0 si es negativo
+        rowHecho += '<td data-day="' + queDiaEs(index) + '" data-minutos="' + minsHechos + '">' + aHoraMinuto(Math.max(minsHechos, 0)) + htmlRetris + '</td>';
         dataHechos.push({
             dia: queDiaEs(index),
             minutos: minsHechos,
@@ -509,8 +512,6 @@ function marcajesToJSON(callback) {
 
             //Calculo los minutos que realmente faltan por hoy
             minutosRestantesRealesHoy = minutosRestantesDesdeUltimoMarcajeHoy - (minutosActualesHoy - minutosUltimoMarcaje);
-
-            //rowRestante += '<td class="form-group has-info padTop15"><input type="text" id="restanteReal" data-restante-ultimo-marcaje="' + minutosRestantesDesdeUltimoMarcajeHoy + '" data-ultimo-marcaje="' + minutosUltimoMarcaje + '" class="form-control text-center floating-label ' + style + '" placeholder="' + minus + aHoraMinuto(Math.abs(restante)) + '" value="" disabled="disabled"></td>';
 
             rowRestante += '<td><span id="restanteReal" data-restante-ultimo-marcaje="' + minutosRestantesDesdeUltimoMarcajeHoy + '" data-ultimo-marcaje="' + minutosUltimoMarcaje + '" class="' + style + '" title="Contando desde el último marcaje de entrada quedarían: ' + minus + aHoraMinuto(Math.abs(restante)) + '"></span></td>';
         } else {
@@ -595,16 +596,15 @@ function getMarcajesInfo(datos) {
     //Por cada día (fila)
     $.each(datos, function (index, value) {
         var information = extractFichajes(value.marcas);
-        //{minutosTotales: 0, minutos: 0, horas: 0, pendienteSalida: "08:06", codeDesayuno: false}
         logger('Datos de información de la fila extraída', 'info');
         logger(information);
 
         if (information === null) {
             dias.push({
                 fecha: value.fecha,
-                minutosTotales: null,
-                minutos: null,
-                horas: null,
+                minutosTotales: null, //Los minutos hechos realmente
+                minutos: null, //Los minutos de la hora hechos realmente
+                horas: null, //Las horas hechas realmente
                 pendienteSalida: null,
                 retribuidoDesayuno: null,
                 descontadoComida: null,

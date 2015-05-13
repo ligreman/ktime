@@ -291,6 +291,7 @@ function refreshTable() {
 
             //Calculo
             minutosHoy = hechoHoy + retribuidoHoy - descontadoHoy;
+            logger('Minutos de ' + diaName + ' antes: ' + minutosHoy);
 
             //Si es jornada continua max 7 horas, partida 9
             if (deseadoHoy.jornadaContinua) {
@@ -299,7 +300,12 @@ function refreshTable() {
                 minutosHoy = Math.min(minutosHoy, 540);
             }
 
-            minutosSemana += minutosHoy;
+            logger('Minutos de ' + diaName + ' despues: ' + minutosHoy);
+            //Si los minutos de hoy salen negativos es que he entrado antes de tiempo y no hay más fichajes, así que no los tengo en cuenta
+            if (minutosHoy > 0) {
+                minutosSemana += minutosHoy;
+            }
+            logger('Van estos minutos a la semana: ' + minutosSemana + '(' + aHoraMinuto(minutosSemana) + ')');
         });
 
         //Sumo y resto a lo hecho en la semana los minutos retribuidos/descontados
